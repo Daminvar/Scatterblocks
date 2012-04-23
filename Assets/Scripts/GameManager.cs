@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 	public GameObject RTSCamera;
+	public GameObject Player;
+	public GameObject PlayerCamera;
 	public bool thirdPerson;
 
 	// Use this for initialization
@@ -10,6 +12,11 @@ public class GameManager : MonoBehaviour {
 	{
 		if(thirdPerson)
 		{
+			var player = Instantiate(Player, new Vector3(-112, 27, 15), Quaternion.identity) as GameObject;
+			var cam = Instantiate(PlayerCamera) as GameObject;
+			var smoothFollow = cam.GetComponent<SmoothFollow>();
+			Debug.Log(smoothFollow);
+			smoothFollow.target = player.transform;
 		}
 		else
 		{

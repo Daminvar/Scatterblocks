@@ -7,6 +7,8 @@ Project("{041B7206-7917-8852-D38B-D8C50670A3DB}") = "Scatterblocks", "Assembly-C
 EndProject
 Project("{041B7206-7917-8852-D38B-D8C50670A3DB}") = "Scatterblocks", "Assembly-UnityScript-firstpass.unityproj", "{5B4C4E13-13BA-DE3E-38A9-62695A8BA2E8}"
 EndProject
+Project("{041B7206-7917-8852-D38B-D8C50670A3DB}") = "Scatterblocks", "Assembly-UnityScript.unityproj", "{BB57B59D-F4E0-399D-4FBC-518200FDB868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,11 +27,15 @@ Global
 		{5B4C4E13-13BA-DE3E-38A9-62695A8BA2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B4C4E13-13BA-DE3E-38A9-62695A8BA2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B4C4E13-13BA-DE3E-38A9-62695A8BA2E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB57B59D-F4E0-399D-4FBC-518200FDB868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB57B59D-F4E0-399D-4FBC-518200FDB868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB57B59D-F4E0-399D-4FBC-518200FDB868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB57B59D-F4E0-399D-4FBC-518200FDB868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-						GlobalSection(MonoDevelopProperties) = preSolution
+										GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
