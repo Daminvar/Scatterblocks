@@ -51,7 +51,7 @@ public class ClickPlane : MonoBehaviour {
 					Debug.Log("modified " + targetPosition.ToString());
 				}
 				
-				(block.GetComponent(typeof(Rigidbody)) as Rigidbody).AddExplosionForce(100.0f, targetPosition, 100.0f, 0.0f, ForceMode.Impulse);
+				(block.GetComponent(typeof(Rigidbody)) as Rigidbody).AddExplosionForce(100.0f, targetPosition, 25.0f, 0.0f, ForceMode.Impulse);
 				
 			
 				//Debug.Log("Some block pos: " + block.transform.position.ToString());
