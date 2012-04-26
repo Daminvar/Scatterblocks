@@ -43,13 +43,15 @@ public class WaitScreenScript : MonoBehaviour {
 		}
 		
 		RoomVariable myRoomVar;
+		List<RoomVariable> roomVars = new List<RoomVariable>();
 		
 		if (isBlueTeam)
 		{
 			blueTeam.Add(smartFox.MySelf.Name);
 			foreach(string name in blueTeam)
 				myTeamUpdate.AddUtfString(name);
-			myRoomVar = new SFSRoomVariable("blue", myTeamUpdate);
+			roomVars.Add(new SFSRoomVariable("blue", myTeamUpdate));
+			roomVars.Add(new SFSRoomVariable("blueRobot", smartFox.MySelf.Name));
 			
 		}
 		else
@@ -57,11 +59,10 @@ public class WaitScreenScript : MonoBehaviour {
 			redTeam.Add(smartFox.MySelf.Name);
 			foreach(string name in redTeam)
 				myTeamUpdate.AddUtfString(name);
-			myRoomVar = new SFSRoomVariable("red", myTeamUpdate);
+			roomVars.Add(new SFSRoomVariable("red", myTeamUpdate));
+			roomVars.Add(new SFSRoomVariable("redRobot", smartFox.MySelf.Name));
+
 		}
-		
-		List<RoomVariable> roomVars = new List<RoomVariable>();
-		roomVars.Add(myRoomVar);
 		
 		smartFox.Send( new SetRoomVariablesRequest(roomVars));
 		

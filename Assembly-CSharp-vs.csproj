@@ -49,6 +49,10 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Lobby.cs" />
      <Compile Include="Assets\Scripts\MainMenuScript.cs" />
+     <Compile Include="Assets\Scripts\NetworkTransform.cs" />
+     <Compile Include="Assets\Scripts\NetworkTransformSender.cs" />
+     <Compile Include="Assets\Scripts\PlayerNetwork.cs" />
+     <Compile Include="Assets\Scripts\Robot.cs" />
      <Compile Include="Assets\Scripts\SmartFoxConnection.cs" />
      <Compile Include="Assets\Scripts\SmoothFollow.cs" />
      <Compile Include="Assets\Scripts\WaitScreenScript.cs" />
