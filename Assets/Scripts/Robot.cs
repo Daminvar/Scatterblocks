@@ -34,6 +34,5 @@ public class Robot : MonoBehaviour {
 		NetworkTransform trans = NetworkTransform.FromSFSObject(obj);
 		transform.position = trans.Position;
 		transform.localEulerAngles = trans.AngleRotation;
-		Debug.Log(trans.Position + " : " + transform.position);
 	}
 }

@@ -58,16 +58,14 @@ public class NetworkTransform
 	
 	// Creating NetworkTransform from SFS object
 	public static NetworkTransform FromSFSObject(ISFSObject data) {
-		NetworkTransform trans = new NetworkTransform();
-		ISFSObject transformData = data.GetSFSObject("transform");
+		NetworkTransform trans = new NetworkTransform();		
+		float x = data.GetFloat("x");
+		float y = data.GetFloat ("y");
+		float z = data.GetFloat ("z");
 		
-		float x = transformData.GetFloat("x");
-		float y = transformData.GetFloat ("y");
-		float z = transformData.GetFloat ("z");
-		
-		float rx = transformData.GetFloat ("rx");
-		float ry = transformData.GetFloat ("ry");
-		float rz = transformData.GetFloat ("rz");
+		float rx = data.GetFloat ("rx");
+		float ry = data.GetFloat ("ry");
+		float rz = data.GetFloat ("rz");
 					
 		trans.position = new Vector3(x, y, z);
 		trans.angleRotation = new Vector3(rx, ry, rz);
