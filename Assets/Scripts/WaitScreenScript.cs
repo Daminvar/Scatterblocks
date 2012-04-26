@@ -31,6 +31,7 @@ public class WaitScreenScript : MonoBehaviour {
 	void Start () {
 		
 		smartFox = SmartFoxConnection.Connection;
+		AddEventListeners();
 		
 		UpdateTeamLists();
 		
@@ -67,8 +68,9 @@ public class WaitScreenScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void Update () 
+	{
+		Debug.Log(redTeam.Count + " : " + blueTeam.Count);
 	}
 	
 	void OnGUI() {
@@ -155,9 +157,10 @@ public class WaitScreenScript : MonoBehaviour {
 		blueTeam.Clear();
 		blueTeam.AddRange(blueTeamArray);
 		*/
-		Debug.Log("here");
-	
-	
+		if (redTeam.Count + blueTeam.Count > 1)
+		{
+			Application.LoadLevel("GameScene");	
+		}
 	}
 	
 	private void DrawUsersGUI(){
