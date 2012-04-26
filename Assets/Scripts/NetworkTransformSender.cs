@@ -22,6 +22,7 @@ public class NetworkTransformSender : MonoBehaviour {
 	private float accuracy = 0.002f;
 	private float timeLastSending = 0.0f;
 	private bool send = false;
+	public bool IsBlueTeam;
 	
 	void Start ()
 	{
@@ -47,6 +48,7 @@ public class NetworkTransformSender : MonoBehaviour {
 		{
 			ISFSObject obj = new SFSObject();
 			obj.PutUtfString("type", "transform");
+			obj.PutBool("isBlue", IsBlueTeam);
 			NetworkTransform.ToSFSObject(obj, transform.position, transform.localEulerAngles);
 			smartFox.Send(new ObjectMessageRequest(obj));
 			timeLastSending = 0;

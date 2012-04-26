@@ -51,7 +51,8 @@ public class WaitScreenScript : MonoBehaviour {
 			foreach(string name in blueTeam)
 				myTeamUpdate.AddUtfString(name);
 			roomVars.Add(new SFSRoomVariable("blue", myTeamUpdate));
-			roomVars.Add(new SFSRoomVariable("blueRobot", smartFox.MySelf.Name));
+			if(!smartFox.LastJoinedRoom.ContainsVariable("blueRobot"))
+				roomVars.Add(new SFSRoomVariable("blueRobot", smartFox.MySelf.Name));
 			
 		}
 		else
@@ -60,7 +61,8 @@ public class WaitScreenScript : MonoBehaviour {
 			foreach(string name in redTeam)
 				myTeamUpdate.AddUtfString(name);
 			roomVars.Add(new SFSRoomVariable("red", myTeamUpdate));
-			roomVars.Add(new SFSRoomVariable("redRobot", smartFox.MySelf.Name));
+			if(!smartFox.LastJoinedRoom.ContainsVariable("redRobot"))
+				roomVars.Add(new SFSRoomVariable("redRobot", smartFox.MySelf.Name));
 
 		}
 		
@@ -158,7 +160,7 @@ public class WaitScreenScript : MonoBehaviour {
 		blueTeam.Clear();
 		blueTeam.AddRange(blueTeamArray);
 		*/
-		if (redTeam.Count + blueTeam.Count > 1)
+		if (redTeam.Count + blueTeam.Count > 2)
 		{
 			Application.LoadLevel("GameScene");	
 		}

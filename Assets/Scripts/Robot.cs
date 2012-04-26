@@ -10,13 +10,23 @@ using Sfs2X.Requests;
 using Sfs2X.Exceptions;
 
 public class Robot : MonoBehaviour {
-	public bool IsBlueTeam;
+	private bool _isBlueTeam;
+	public bool IsBlueTeam {
+		get { return _isBlueTeam; }
+		set {
+			_isBlueTeam = value;
+			
+			if(!_isBlueTeam)
+				this.GetComponentInChildren<Renderer>().material.color = Color.red;
+		}
+	}
 	private SmartFox smartFox;
 	
 	// Use this for initialization
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
+
 	}
 	
 	// Update is called once per frame
@@ -26,7 +36,7 @@ public class Robot : MonoBehaviour {
 	
 	private void onMessage(BaseEvent evt) {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
-		if(msg.GetUtfString("type") == "transform")
+		if(msg.GetUtfString("type") == "transform" && msg.GetBool("isBlue") == IsBlueTeam)
 			updateRobotPosition(msg);
 	}
 	

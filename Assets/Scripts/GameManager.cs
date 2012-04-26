@@ -37,13 +37,20 @@ public class GameManager : MonoBehaviour {
 		if(isRobot())
 			thirdPerson = true;
 		
-		if(thirdPerson && !isBlueTeam)
+		if(thirdPerson)
 		{
 			GameObject player;
-			if(isBlueTeam)
+			if(isBlueTeam) {
 				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
-			else
+				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
+				var redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
+				redRobot.GetComponent<Robot>().IsBlueTeam = false;
+			} else {
 				player = Instantiate(Player, RED_START, Quaternion.identity) as GameObject;
+				player.GetComponent<PlayerNetwork>().IsBlueTeam = false;
+				var blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+				blueRobot.GetComponent<Robot>().IsBlueTeam = true;
+			}
 			var cam = Instantiate(PlayerCamera) as GameObject;
 			var smoothFollow = cam.GetComponent<SmoothFollow>();
 			Debug.Log(smoothFollow);
@@ -53,8 +60,11 @@ public class GameManager : MonoBehaviour {
 		{
 			var cam = Instantiate(RTSCamera, new Vector3(0, 200, 0), Quaternion.identity) as GameObject;
 			cam.transform.LookAt(new Vector3(0, 0, 0));
-			GameObject robot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
-			robot.GetComponent<Robot>().IsBlueTeam = false;
+			GameObject redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
+			GameObject blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+			redRobot.GetComponent<Robot>().IsBlueTeam = false;
+			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
+
 		}
 	}
 	
