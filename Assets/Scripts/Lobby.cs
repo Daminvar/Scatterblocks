@@ -143,13 +143,13 @@ public class Lobby : MonoBehaviour {
 		Debug.Log("[SFS DEBUG] " + message);
 	}
 	
-	
 	public void OnRoomAdded(BaseEvent evt)
 	{
 		Room room = (Room)evt.Params["room"];
 		SetupRoomList();
 		Debug.Log("Room added: "+room.Name);
 	}
+	
 	public void OnRoomCreationError(BaseEvent evt)
 	{
 		Debug.Log("Error creating room");
@@ -201,7 +201,6 @@ public class Lobby : MonoBehaviour {
 		}
 	}
 	
-	
 	//PrepareLobby is called from OnLogin, the callback for login
 	//so we can be assured that login was successful
 	private void PrepareLobby() {
@@ -210,8 +209,8 @@ public class Lobby : MonoBehaviour {
 		isLoggedIn = true;
 	}
 	
-	
-	void OnGUI() {
+	void OnGUI() 
+	{
 		if (smartFox == null) return;
 		screenW = Screen.width;
 				
@@ -231,7 +230,6 @@ public class Lobby : MonoBehaviour {
 			}
 		}
 	}
-	
 	
 	private void DrawLoginGUI(){
 		GUI.Label(new Rect(10, 90, 100, 100), "Username: ");
@@ -269,7 +267,6 @@ public class Lobby : MonoBehaviour {
 			smartFox.Send( new LogoutRequest() );
 		}
 	}
-		
 		
 	private void DrawUsersGUI(){
 		GUI.Box (new Rect (screenW - 200, 80, 180, 170), "Users");
@@ -322,13 +319,14 @@ public class Lobby : MonoBehaviour {
 					}
 					SFSRoomVariable colorNums = new SFSRoomVariable("colorNums", nums);
 					settings.Variables.Add(colorNums);
-					smartFox.Send(new CreateRoomRequest(settings));
+					smartFox.Send(new CreateRoomRequest(settings, true, smartFox.LastJoinedRoom));
 				}
 			}
 		GUILayout.EndArea();
 	}
 	
-	private void DrawChatGUI(){
+	private void DrawChatGUI()
+	{
 		GUI.Box(new Rect(10, 80, 470, 390), "Chat");
 
 		GUILayout.BeginArea (new Rect(20, 110, 450, 350));
