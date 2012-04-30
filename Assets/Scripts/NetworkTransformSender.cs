@@ -17,9 +17,8 @@ public class NetworkTransformSender : MonoBehaviour {
 	// We will send transform each 0.1 second. To make transform 
 	//synchronization smoother consider writing interpolation algorithm 
 	//instead of making smaller period.
-	public static float sendingPeriod = 0.1f; 
+	public static float sendingPeriod = 0.03f; 
 	
-	private float accuracy = 0.002f;
 	private float timeLastSending = 0.0f;
 	private bool send = false;
 	public bool IsBlueTeam;
@@ -48,6 +47,7 @@ public class NetworkTransformSender : MonoBehaviour {
 		{
 			ISFSObject obj = NetworkHelper.TransformToSFSObject(transform.position, transform.localEulerAngles);
 			obj.PutBool("isBlue", IsBlueTeam);
+			obj.PutFloat("time", Time.time);
 			smartFox.Send(new ObjectMessageRequest(obj));
 			timeLastSending = 0;
 			return;

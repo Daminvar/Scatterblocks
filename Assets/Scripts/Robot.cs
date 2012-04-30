@@ -44,10 +44,8 @@ public class Robot : MonoBehaviour {
 		float deltaY = Time.deltaTime * distanceDelta.y;
 		float deltaZ = Time.deltaTime * distanceDelta.z;
 		
-		if (Math.Abs(deltaX) < 100000.0f && Math.Abs(deltaY) < 100000.0f && Math.Abs(deltaZ) < 100000.0f)
-		{
-			transform.position = new Vector3(transform.position.x + deltaX, transform.position.y + deltaY, transform.position.z + deltaZ);
-		}
+		transform.position = (new Vector3(transform.position.x + deltaX, transform.position.y + deltaY, transform.position.z + deltaZ));//distanceDelta/(mostRecentTime - prevTime);
+
 	}
 	
 	private void onMessage(BaseEvent evt) {
@@ -76,7 +74,7 @@ public class Robot : MonoBehaviour {
 		
 		mostRecentTrans = nTrans;
 		
-		mostRecentTime = Time.time;
+		mostRecentTime = obj.GetFloat("time");
 		
 		distanceDelta.x = (mostRecentTrans.x - lastTransform.x)/(mostRecentTime - prevTime);
 		distanceDelta.y = (mostRecentTrans.y - lastTransform.y)/(mostRecentTime - prevTime);
