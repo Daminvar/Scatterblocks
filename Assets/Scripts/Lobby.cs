@@ -26,8 +26,8 @@ public class Lobby : MonoBehaviour {
 	private ArrayList messages = new ArrayList();
 	
 	//keep track of room we're in
-	private Room currentActiveRoom;
-	public Room CurrentActiveRoom{ get {return currentActiveRoom;} }
+	//private Room currentActiveRoom;
+	//public Room CurrentActiveRoom{ get {return currentActiveRoom;} }
 				
 	private Vector2 roomScrollPosition, userScrollPosition, chatScrollPosition;
 	private int roomSelection = -1;	  //For clicking on list box 
@@ -69,8 +69,9 @@ public class Lobby : MonoBehaviour {
 		smartFox.AddEventListener(SFSEvent.LOGIN_ERROR, OnLoginError);
 		smartFox.AddEventListener(SFSEvent.LOGOUT, OnLogout);
 		smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
-		smartFox.AddEventListener(SFSEvent.ROOM_ADD, OnRoomAdded);
+		smartFox.AddEventListener(SFSEvent.ROOM_ADD, OnRoomCountChange);
 		smartFox.AddEventListener(SFSEvent.ROOM_CREATION_ERROR, OnRoomCreationError);
+		smartFox.AddEventListener(SFSEvent.ROOM_REMOVE, OnRoomCountChange);
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 		smartFox.AddEventListener(SFSEvent.USER_ENTER_ROOM, OnUserEnterRoom);
 		smartFox.AddEventListener(SFSEvent.USER_EXIT_ROOM, OnUserLeaveRoom);
@@ -105,9 +106,9 @@ public class Lobby : MonoBehaviour {
 		Debug.Log("OnConnectionLost");
 		isLoggedIn = false;
 		UnregisterSFSSceneCallbacks();
-		currentActiveRoom = null;
+		//currentActiveRoom = null;
 		roomSelection = -1;	
-		Application.LoadLevel("The Lobby");
+		Application.LoadLevel("MainMenu");
 	}
 
 	// Various SFS callbacks
@@ -134,7 +135,7 @@ public class Lobby : MonoBehaviour {
 	void OnLogout(BaseEvent evt) {
 		Debug.Log("OnLogout");
 		isLoggedIn = false;
-		currentActiveRoom = null;
+		//currentActiveRoom = null;
 		smartFox.Disconnect();
 	}
 	
@@ -143,11 +144,10 @@ public class Lobby : MonoBehaviour {
 		Debug.Log("[SFS DEBUG] " + message);
 	}
 	
-	public void OnRoomAdded(BaseEvent evt)
+	public void OnRoomCountChange(BaseEvent evt)
 	{
 		Room room = (Room)evt.Params["room"];
 		SetupRoomList();
-		Debug.Log("Room added: "+room.Name);
 	}
 	
 	public void OnRoomCreationError(BaseEvent evt)
@@ -157,14 +157,16 @@ public class Lobby : MonoBehaviour {
 	
 	public void OnJoinRoom(BaseEvent evt)
 	{
+		AddEventListeners();
+		SetupRoomList();
 		Room room = (Room)evt.Params["room"];
-		currentActiveRoom = room;
-		Debug.Log("joined "+room.Name);
+		//currentActiveRoom = room;
+		Debug.Log(" Lobby.OnJoinRoom joined "+room.Name);
 		if(room.Name=="The Lobby" )
 			Application.LoadLevel("MainMenu");
-		else {
+		else
+		{
 			Application.LoadLevel("WaitScene");
-			smartFox.Send(new JoinRoomRequest("GameRoom"));
 		}
 	}
 	
@@ -219,11 +221,11 @@ public class Lobby : MonoBehaviour {
 			DrawLoginGUI();
 		}
 		
-		else if (currentActiveRoom != null) 
+		else if (smartFox.LastJoinedRoom != null) 
 		{
-			
 			// ****** Show full interface only in the Lobby ******* //
-			if(currentActiveRoom.Name == "The Lobby")
+			//if(currentActiveRoom.Name == "The Lobby")
+			if (smartFox.LastJoinedRoom.Name == "The Lobby" && Application.loadedLevelName == "MainMenu")
 			{
 				DrawLobbyGUI();
 				DrawRoomsGUI();
@@ -274,7 +276,7 @@ public class Lobby : MonoBehaviour {
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
 			
-				List<User> userList = currentActiveRoom.UserList;
+				List<User> userList = smartFox.LastJoinedRoom.UserList;
 				foreach (User user in userList) {
 					GUILayout.Label (user.Name); 
 				}
@@ -291,7 +293,7 @@ public class Lobby : MonoBehaviour {
 				roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (180), GUILayout.Height (130));
 					roomSelection = GUILayout.SelectionGrid (roomSelection, roomFullStrings, 1);
 					
-					if (roomSelection >= 0 && roomNameStrings[roomSelection] != currentActiveRoom.Name) {
+					if (roomSelection >= 0 && roomNameStrings[roomSelection] != smartFox.LastJoinedRoom.Name) {
 						smartFox.Send(new JoinRoomRequest(roomNameStrings[roomSelection]));
 					}
 				GUILayout.EndScrollView ();
@@ -301,7 +303,7 @@ public class Lobby : MonoBehaviour {
 			}
 			
 			// Game Room button
-			if (currentActiveRoom.Name == "The Lobby"){
+			if (smartFox.LastJoinedRoom.Name == "The Lobby"){
 				if (GUI.Button (new Rect (80, 110, 85, 24), "Make Game")) {		
 					// ****** Create new room ******* //
 					Debug.Log("new room "+username + "'s Room");
@@ -311,14 +313,7 @@ public class Lobby : MonoBehaviour {
 					// how many players allowed
 					settings.MaxUsers = 8;	
 					settings.IsGame = true;
-					
-					//store indices into color arrays for setting user colors, delete as used
-					SFSArray nums = new SFSArray();
-					for(int i=0; i<5;i++){
-						nums.AddInt(i);
-					}
-					SFSRoomVariable colorNums = new SFSRoomVariable("colorNums", nums);
-					settings.Variables.Add(colorNums);
+				
 					smartFox.Send(new CreateRoomRequest(settings, true, smartFox.LastJoinedRoom));
 				}
 			}

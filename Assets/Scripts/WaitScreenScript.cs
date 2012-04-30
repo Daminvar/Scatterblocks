@@ -73,7 +73,7 @@ public class WaitScreenScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		Debug.Log(redTeam.Count + " : " + blueTeam.Count);
+		
 	}
 	
 	void OnGUI() 
@@ -87,14 +87,14 @@ public class WaitScreenScript : MonoBehaviour {
 	
 	private void AddEventListeners() {
 		
-		smartFox.RemoveAllEventListeners();
+		//smartFox.RemoveAllEventListeners();
 		
 		smartFox.AddEventListener(SFSEvent.CONNECTION_LOST, OnConnectionLost);
 		smartFox.AddEventListener(SFSEvent.LOGOUT, OnLogout);
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessage);
-		smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
+		//smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
 	}
 	
 	public void OnConnectionLost(BaseEvent evt) {
@@ -135,20 +135,15 @@ public class WaitScreenScript : MonoBehaviour {
 		UpdateTeamLists();
 	}
 	
-	public void OnJoinRoom(BaseEvent evt)
+	/*public void OnJoinRoom(BaseEvent evt)
 	{
 		Room room = (Room)evt.Params["room"];
 		Debug.Log("joined "+room.Name);
 		if(room.Name=="The Lobby")
 		{
-			//Application.LoadLevel("MainMenu");
+			Application.LoadLevel("MainMenu");
 		}
-		else
-		{
-			Application.LoadLevel("WaitScene");
-			smartFox.Send(new JoinRoomRequest("GameRoom"));
-		}
-	}
+	}*/
 	
 	public void OnObjectMessage(BaseEvent evt)
 	{
@@ -185,8 +180,6 @@ public class WaitScreenScript : MonoBehaviour {
 		if (GUI.Button (new Rect (screenW - 200, 470, 180, 30), "Leave Room")) 
 		{
 			smartFox.Send(new JoinRoomRequest("The Lobby"));
-			//Application.LoadLevel("MainMenu");
-			Debug.Log(Application.loadedLevelName);
 		}
 		if (redTeam.Count + blueTeam.Count > 2 && IsLowestID())
 		{
