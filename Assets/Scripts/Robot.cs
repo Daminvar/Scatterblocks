@@ -15,23 +15,16 @@ public class Robot : MonoBehaviour {
 		get { return _isBlueTeam; }
 		set {
 			_isBlueTeam = value;
-			
 			if(!_isBlueTeam)
 				this.GetComponentInChildren<Renderer>().material.color = Color.red;
 		}
 	}
 	private SmartFox smartFox;
 	
-	// Use this for initialization
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 	
 	private void onMessage(BaseEvent evt) {
@@ -41,8 +34,6 @@ public class Robot : MonoBehaviour {
 	}
 	
 	private void updateRobotPosition(ISFSObject obj) {
-		NetworkTransform trans = NetworkTransform.FromSFSObject(obj);
-		transform.position = trans.Position;
-		transform.localEulerAngles = trans.AngleRotation;
+		NetworkHelper.SFSObjectToTransform(obj, transform);
 	}
 }

@@ -141,7 +141,7 @@ public class WaitScreenScript : MonoBehaviour {
 		Debug.Log("joined "+room.Name);
 		if(room.Name=="The Lobby")
 		{
-			Application.LoadLevel("MainMenu");
+			//Application.LoadLevel("MainMenu");
 		}
 		else
 		{
@@ -185,7 +185,7 @@ public class WaitScreenScript : MonoBehaviour {
 		if (GUI.Button (new Rect (screenW - 200, 470, 180, 30), "Leave Room")) 
 		{
 			smartFox.Send(new JoinRoomRequest("The Lobby"));
-			Application.LoadLevel("MainMenu");
+			//Application.LoadLevel("MainMenu");
 			Debug.Log(Application.loadedLevelName);
 		}
 		if (redTeam.Count + blueTeam.Count > 2 && IsLowestID())

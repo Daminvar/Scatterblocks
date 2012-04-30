@@ -46,10 +46,8 @@ public class NetworkTransformSender : MonoBehaviour {
 	void SendTransform() {
 		if (timeLastSending >= sendingPeriod) 
 		{
-			ISFSObject obj = new SFSObject();
-			obj.PutUtfString("type", "transform");
+			ISFSObject obj = NetworkHelper.TransformToSFSObject(transform.position, transform.localEulerAngles);
 			obj.PutBool("isBlue", IsBlueTeam);
-			NetworkTransform.ToSFSObject(obj, transform.position, transform.localEulerAngles);
 			smartFox.Send(new ObjectMessageRequest(obj));
 			timeLastSending = 0;
 			return;
