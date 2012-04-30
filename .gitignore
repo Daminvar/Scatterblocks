@@ -2,3 +2,7 @@ Thumbs.db
 Library/
 Temp/
 *.pidb
+*.csproj
+*.unityproj
+*.sln
+*.userprefs

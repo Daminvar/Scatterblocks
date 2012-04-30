@@ -73,24 +73,28 @@ public class WaitScreenScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		Debug.Log(redTeam.Count + " : " + blueTeam.Count);
+		
 	}
 	
-	void OnGUI() {
+	void OnGUI() 
+	{
 		screenW = Screen.width;
 				
 		DrawUsersGUI();
 		DrawChatGUI();
+		DrawButtons();
 	}
 	
 	private void AddEventListeners() {
 		
-		smartFox.RemoveAllEventListeners();
+		//smartFox.RemoveAllEventListeners();
 		
 		smartFox.AddEventListener(SFSEvent.CONNECTION_LOST, OnConnectionLost);
 		smartFox.AddEventListener(SFSEvent.LOGOUT, OnLogout);
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
+		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessage);
+		//smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
 	}
 	
 	public void OnConnectionLost(BaseEvent evt) {
@@ -131,6 +135,26 @@ public class WaitScreenScript : MonoBehaviour {
 		UpdateTeamLists();
 	}
 	
+	/*public void OnJoinRoom(BaseEvent evt)
+	{
+		Room room = (Room)evt.Params["room"];
+		Debug.Log("joined "+room.Name);
+		if(room.Name=="The Lobby")
+		{
+			Application.LoadLevel("MainMenu");
+		}
+	}*/
+	
+	public void OnObjectMessage(BaseEvent evt)
+	{
+		ISFSObject message = (SFSObject)evt.Params["message"];
+		
+		if (message.GetUtfString("type") == "everyoneJoin")
+		{
+			Application.LoadLevel("GameScene");
+		}
+	}
+	
 	private void UpdateTeamLists()
 	{
 		redTeam.Clear();
@@ -149,20 +173,22 @@ public class WaitScreenScript : MonoBehaviour {
 				blueTeam.Add(arr.GetUtfString(i));
 			}
 		}
-		
-//		string redTeamArray = redArray.GetUtfString(0);
-//		Debug.Log(redTeamArray);
-//		string[] blueTeamArray = blueArray.GetUtfStringArray(0);
-		
-		/*
-		redTeam.Clear();
-		redTeam.AddRange(redTeamArray);
-		blueTeam.Clear();
-		blueTeam.AddRange(blueTeamArray);
-		*/
-		if (redTeam.Count + blueTeam.Count > 2)
+	}
+	
+	private void DrawButtons()
+	{
+		if (GUI.Button (new Rect (screenW - 200, 470, 180, 30), "Leave Room")) 
 		{
-			Application.LoadLevel("GameScene");	
+			smartFox.Send(new JoinRoomRequest("The Lobby"));
+		}
+		if (redTeam.Count + blueTeam.Count > 2 && IsLowestID())
+		{
+			if (GUI.Button (new Rect (screenW - 350, 400, 100, 100), "Start Game"))
+			{
+				ISFSObject sendJoinMessage = new SFSObject();
+				sendJoinMessage.PutUtfString("type", "everyoneJoin");
+				smartFox.Send(new ObjectMessageRequest(sendJoinMessage, null, smartFox.LastJoinedRoom.UserList));
+			}
 		}
 	}
 	
@@ -207,7 +233,40 @@ public class WaitScreenScript : MonoBehaviour {
 				}
 				GUILayout.EndVertical();
 			GUILayout.EndScrollView ();
-		GUILayout.EndArea();		
+		GUILayout.EndArea();
+		
+		// Send message
+		newMessage = GUI.TextField(new Rect(10, 480, 370, 20), newMessage, 50);
+		if (GUI.Button(new Rect(390, 478, 90, 24), "Send")  || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
+		{
+			smartFox.Send( new PublicMessageRequest(newMessage) );
+			newMessage = "";
+		}
 	}
 	
+	private bool IsLowestID()
+	{
+		int lowestUserID = Int32.MaxValue;
+		int userIDToCheck = 100;
+		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
+		
+		foreach (User u in smartFox.LastJoinedRoom.UserList)
+		{
+			userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
+			
+			if (userIDToCheck < lowestUserID)
+			{
+				lowestUserID = userIDToCheck;
+			}
+		}
+		
+		if (myID == lowestUserID)
+		{
+			return true;
+		}
+		else
+		{
+			return false;	
+		}
+	}
 }
