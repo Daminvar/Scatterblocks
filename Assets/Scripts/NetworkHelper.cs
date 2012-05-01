@@ -23,20 +23,11 @@ public class NetworkHelper {
 	}
 	
 	public static void SFSObjectToTransform(ISFSObject data, Transform trans) {
-		float x = data.GetFloat("x");
-		float y = data.GetFloat("y");
-		float z = data.GetFloat("z");
-		
-		float rx = data.GetFloat("rx");
-		float ry = data.GetFloat("ry");
-		float rz = data.GetFloat("rz");
-		
-		trans.position = new Vector3(x, y, z);
-		trans.localEulerAngles = new Vector3(rx, ry, rz);
+		trans.position = GetSFSTransform(data);
+		trans.localEulerAngles = GetSFSRotation(data);
 	}
 	
-	public static Vector3 GetSFSTransform(ISFSObject data)
-	{
+	public static Vector3 GetSFSTransform(ISFSObject data) {
 		float x = data.GetFloat("x");
 		float y = data.GetFloat("y");
 		float z = data.GetFloat("z");
@@ -44,8 +35,7 @@ public class NetworkHelper {
 		return new Vector3(x,y,z);
 	}
 	
-	public static Vector3 GetSFSRotation(ISFSObject data)
-	{
+	public static Vector3 GetSFSRotation(ISFSObject data) {
 		float rx = data.GetFloat("rx");
 		float ry = data.GetFloat("ry");
 		float rz = data.GetFloat("rz");
