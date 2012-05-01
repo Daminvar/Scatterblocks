@@ -13,23 +13,18 @@ using Sfs2X.Logging;
 
 
 public class WaitScreenScript : MonoBehaviour {
+	public const int MIN_USERS = 3;
 
 	private string newMessage = "";
 	private ArrayList messages = new ArrayList();
-	
 	private List<string> redTeam = new List<string>();
 	private List<string> blueTeam = new List<string>();
-	
 	private Vector2 roomScrollPosition, userScrollPosition, chatScrollPosition;
 	private int screenW;
-	
 	private SmartFox smartFox;
-	
 	private bool isBlueTeam = false;
 	
-	// Use this for initialization
 	void Start () {
-		
 		smartFox = SmartFoxConnection.Connection;
 		AddEventListeners();
 		
@@ -37,8 +32,7 @@ public class WaitScreenScript : MonoBehaviour {
 		
 		SFSArray myTeamUpdate = new SFSArray();
 		
-		if (blueTeam.Count < redTeam.Count)
-		{
+		if (blueTeam.Count < redTeam.Count) {
 			isBlueTeam = true;	
 		}
 		
@@ -129,28 +123,15 @@ public class WaitScreenScript : MonoBehaviour {
 		}
 	}
 	
-	void OnRoomVariableUpdate(BaseEvent evt)
-	{
-		//Do things.
+	void OnRoomVariableUpdate(BaseEvent evt) {
 		UpdateTeamLists();
 	}
-	
-	/*public void OnJoinRoom(BaseEvent evt)
-	{
-		Room room = (Room)evt.Params["room"];
-		Debug.Log("joined "+room.Name);
-		if(room.Name=="The Lobby")
-		{
-			Application.LoadLevel("MainMenu");
-		}
-	}*/
 	
 	public void OnObjectMessage(BaseEvent evt)
 	{
 		ISFSObject message = (SFSObject)evt.Params["message"];
 		
-		if (message.GetUtfString("type") == "everyoneJoin")
-		{
+		if (message.GetUtfString("type") == "everyoneJoin") {
 			Application.LoadLevel("GameScene");
 		}
 	}
@@ -181,7 +162,7 @@ public class WaitScreenScript : MonoBehaviour {
 		{
 			smartFox.Send(new JoinRoomRequest("The Lobby"));
 		}
-		if (redTeam.Count + blueTeam.Count > 2 && IsLowestID())
+		if (redTeam.Count + blueTeam.Count >= MIN_USERS && IsLowestID())
 		{
 			if (GUI.Button (new Rect (screenW - 350, 400, 100, 100), "Start Game"))
 			{
@@ -247,26 +228,13 @@ public class WaitScreenScript : MonoBehaviour {
 	private bool IsLowestID()
 	{
 		int lowestUserID = Int32.MaxValue;
-		int userIDToCheck = 100;
 		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
 		
-		foreach (User u in smartFox.LastJoinedRoom.UserList)
-		{
-			userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
-			
+		foreach (User u in smartFox.LastJoinedRoom.UserList) {
+			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
 			if (userIDToCheck < lowestUserID)
-			{
 				lowestUserID = userIDToCheck;
-			}
 		}
-		
-		if (myID == lowestUserID)
-		{
-			return true;
-		}
-		else
-		{
-			return false;	
-		}
+		return myID == lowestUserID;
 	}
 }

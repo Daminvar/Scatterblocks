@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 using Sfs2X;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour {
 	
 	private SmartFox smartFox;
 	private bool isBlueTeam;
+	private GameObject[] _blocks;
 		
 	private Vector3 targetPosition;
 
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour {
 		setCurrentTeam();
 				
 		targetPosition = new Vector3(0,0,0);	
+		_blocks = GameObject.FindGameObjectsWithTag("Block");
 		
 		if(isRobot())
 			thirdPerson = true;
@@ -66,6 +69,9 @@ public class GameManager : MonoBehaviour {
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 
 		}
+		
+		if(IsLowestID())
+			InvokeRepeating("sendBlockData", 1, 1);
 	}
 	
 	private void setCurrentTeam() {
@@ -93,13 +99,27 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		
+	}
+	
+	private void sendBlockData() {
+		var obj = new SFSObject();
+		obj.PutUtfString("type", "sync");
+		var blocksArray = new SFSArray();
+		foreach (GameObject block in _blocks) {
+			var blockData = new SFSObject();
+			blockData.PutFloatArray("position", new[] {block.transform.position.x, block.transform.position.z});
+			blocksArray.AddSFSObject(blockData);
+		}
+		obj.PutSFSArray("blocks", blocksArray);
+		smartFox.Send (new ObjectMessageRequest(obj));
 	}
 	
 	private void onMessage(BaseEvent evt) {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
 		if(msg.GetUtfString("type") == "explosion")
 			recieveExplosionForce(msg);
+		if(msg.GetUtfString("type") == "sync")
+			syncBlocks(msg);
 	}
 	
 	private void recieveExplosionForce(ISFSObject msg) {
@@ -124,5 +144,29 @@ public class GameManager : MonoBehaviour {
 			}
 			block.GetComponent<Rigidbody>().AddExplosionForce(100.0f, targetPosition, 25.0f, 0.0f, ForceMode.Impulse);
 		}
+	}
+	
+	private void syncBlocks(ISFSObject msg) {
+		var networkBlocks = msg.GetSFSArray("blocks");
+		for(int i = 0; i < networkBlocks.Size (); i++) {
+			float[] coordinates = networkBlocks.GetSFSObject(i).GetFloatArray("position");
+			//float[] velocityComponents = networkBlocks.GetSFSObject(i).GetFloatArray("velocity");
+			_blocks[i].transform.position = new Vector3(coordinates[0], _blocks[i].transform.position.y, coordinates[1]);
+			//_blocks[i].rigidbody.velocity = new Vector3(velocityComponents[0], velocityComponents[1], velocityComponents[2]);
+		}
+	}
+	
+	//TODO: This should be refactored.
+	private bool IsLowestID()
+	{
+		int lowestUserID = Int32.MaxValue;
+		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
+		
+		foreach (User u in smartFox.LastJoinedRoom.UserList) {
+			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
+			if (userIDToCheck < lowestUserID)
+				lowestUserID = userIDToCheck;
+		}
+		return myID == lowestUserID;
 	}
 }
