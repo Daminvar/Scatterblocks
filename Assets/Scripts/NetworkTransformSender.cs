@@ -14,9 +14,6 @@ using Sfs2X.Exceptions;
 public class NetworkTransformSender : MonoBehaviour {
 	private SmartFox smartFox;
 
-	// We will send transform each 0.1 second. To make transform 
-	//synchronization smoother consider writing interpolation algorithm 
-	//instead of making smaller period.
 	public static float sendingPeriod = 0.03f; 
 	
 	private float timeLastSending = 0.0f;
@@ -38,7 +35,6 @@ public class NetworkTransformSender : MonoBehaviour {
 	{
 		if (send) {
 			SendTransform ();
-			Debug.Log("Sending the transform");
 		}
 	}
 	
