@@ -38,7 +38,7 @@ public class NetworkTransformSender : MonoBehaviour {
 	{
 		if (send) {
 			SendTransform ();
-			Debug.Log("Sending the transform");
+			//Debug.Log("Sending the transform");
 		}
 	}
 	
