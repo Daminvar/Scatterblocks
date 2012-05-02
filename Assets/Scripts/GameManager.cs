@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour {
 		foreach (GameObject block in _blocks) {
 			var blockData = new SFSObject();
 			blockData.PutFloatArray("position", new[] {block.transform.position.x, block.transform.position.z});
+            blockData.PutFloatArray("velocity", new[] {block.rigidbody.velocity.x, block.rigidbody.velocity.z});
 			blocksArray.AddSFSObject(blockData);
 		}
 		obj.PutSFSArray("blocks", blocksArray);
@@ -150,9 +151,9 @@ public class GameManager : MonoBehaviour {
 		var networkBlocks = msg.GetSFSArray("blocks");
 		for(int i = 0; i < networkBlocks.Size (); i++) {
 			float[] coordinates = networkBlocks.GetSFSObject(i).GetFloatArray("position");
-			//float[] velocityComponents = networkBlocks.GetSFSObject(i).GetFloatArray("velocity");
+			float[] velocityComponents = networkBlocks.GetSFSObject(i).GetFloatArray("velocity");
 			_blocks[i].transform.position = new Vector3(coordinates[0], _blocks[i].transform.position.y, coordinates[1]);
-			//_blocks[i].rigidbody.velocity = new Vector3(velocityComponents[0], velocityComponents[1], velocityComponents[2]);
+			_blocks[i].rigidbody.velocity = new Vector3(velocityComponents[0], 0, velocityComponents[1]);
 		}
 	}
 	
