@@ -25,20 +25,18 @@ struct LogMessage {
 public class DebugPane : MonoBehaviour {
 	public int MAX_LOG = 100;
 
-	private SmartFox smartFox;
-	
 	private string _roomVarName;
 	private string _roomVarValue;
 	private List<LogMessage> _currentLog;
 	private bool _isLogVisible;
+	private bool _areVarsVisible;
 	private Vector2 _currentScrollPosition;
 
-	// Use this for initialization
 	void Start() {
-		smartFox = SmartFoxConnection.Connection;
 		_roomVarName = "";
 		_roomVarValue = "";
 		_isLogVisible = false;
+		_areVarsVisible = false;
 		_currentLog = new List<LogMessage>(MAX_LOG);
 	}
 	
@@ -74,10 +72,15 @@ public class DebugPane : MonoBehaviour {
 			_roomVarName = GUILayout.TextField(_roomVarName, 20, GUILayout.Width (100));
 			GUILayout.Space (10);
 			
-			GUILayout.Label ("Value (prefix with type): ");
+			GUILayout.Label ("Value: ");
 			_roomVarValue = GUILayout.TextField(_roomVarValue, 20, GUILayout.Width (100));
 			if(GUILayout.Button ("Set Variable")) {
 				setRoomVariable();
+			}
+			GUILayout.Space (10);
+			
+			if(GUILayout.Button("Toggle Room Vars")) {
+				_areVarsVisible = !_areVarsVisible;
 			}
 			GUILayout.Space (10);
 		}
@@ -88,18 +91,49 @@ public class DebugPane : MonoBehaviour {
 		GUILayout.EndHorizontal();
 		
 		if(_isLogVisible) {
-			GUILayout.BeginVertical("box");
-			windowGUI(0);
-			GUILayout.EndVertical();
+			logGUI();
+		}
+		
+		if(_areVarsVisible && SmartFoxConnection.IsInitialized) {
+			roomVarGUI();
 		}
 	}
 	
 	private void setRoomVariable() {
-		//TODO: Implement
-		return;
+		if(_roomVarName == "" || _roomVarValue == "")
+			return;
+		RoomVariable roomVar;
+		var typeString = _roomVarValue[0];
+		switch(typeString) {
+		case 'f':
+			roomVar = new SFSRoomVariable(_roomVarName, float.Parse (_roomVarValue.Substring(1)));
+			break;
+		case 's':
+			roomVar = new SFSRoomVariable(_roomVarName, _roomVarValue.Substring(1));
+			break;
+		default:
+			Debug.Log ("Unhandled prefix");
+			return;
+		}
+		SmartFoxConnection.Connection.Send (new SetRoomVariablesRequest(new [] {roomVar}, SmartFoxConnection.Connection.LastJoinedRoom));
 	}
 	
-	private void windowGUI(int id) {
+	//FIXME: Give better information for SFSArrays and other compound data types.
+	private void roomVarGUI() {
+		GUILayout.BeginVertical("box");
+		if(SmartFoxConnection.Connection.LastJoinedRoom == null) return;
+		var roomVars = SmartFoxConnection.Connection.LastJoinedRoom.GetVariables();
+		var style = new GUIStyle();
+		style.fontSize = 14;
+		style.normal.textColor = Color.white;
+		foreach(var roomVar in roomVars) {
+			GUILayout.Label (string.Format ("{0}: {1}", roomVar.Name, roomVar.Value.ToString()), style);
+		}
+		GUILayout.EndVertical();
+	}
+	
+	private void logGUI() {
+		GUILayout.BeginVertical("box");
 		_currentScrollPosition = GUILayout.BeginScrollView(_currentScrollPosition);
 		foreach(var log in _currentLog) {
 			var style = new GUIStyle();
@@ -108,13 +142,14 @@ public class DebugPane : MonoBehaviour {
 			GUILayout.Label (log.message, style);
 		}
 		GUILayout.EndScrollView();
+		GUILayout.EndVertical();
 	}
 	
 	private Color getLogTypeColor(LogType type) {
 		switch(type) {
-			case LogType.Error: return Color.red;
-			case LogType.Warning: return Color.yellow;
-			default: return Color.white;
+		case LogType.Error: return Color.red;
+		case LogType.Warning: return Color.yellow;
+		default: return Color.white;
 		}
 	}
 }
