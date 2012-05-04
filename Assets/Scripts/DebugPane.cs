@@ -124,7 +124,7 @@ public class DebugPane : MonoBehaviour {
 		if(SmartFoxConnection.Connection.LastJoinedRoom == null) return;
 		var roomVars = SmartFoxConnection.Connection.LastJoinedRoom.GetVariables();
 		var style = new GUIStyle();
-		style.fontSize = 14;
+		style.fontSize = 12;
 		style.normal.textColor = Color.white;
 		foreach(var roomVar in roomVars) {
 			GUILayout.Label (string.Format ("{0}: {1}", roomVar.Name, roomVar.Value.ToString()), style);
@@ -137,7 +137,7 @@ public class DebugPane : MonoBehaviour {
 		_currentScrollPosition = GUILayout.BeginScrollView(_currentScrollPosition);
 		foreach(var log in _currentLog) {
 			var style = new GUIStyle();
-			style.fontSize = 14;
+			style.fontSize = 12;
 			style.normal.textColor = getLogTypeColor(log.type);
 			GUILayout.Label (log.message, style);
 		}
