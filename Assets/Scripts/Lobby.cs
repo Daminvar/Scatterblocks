@@ -83,10 +83,6 @@ public class Lobby : MonoBehaviour {
 		smartFox.ProcessEvents();
 	}
 	
-	private void UnregisterSFSSceneCallbacks() {
-		smartFox.RemoveAllEventListeners();
-	}
-	
 	public void OnConnection(BaseEvent evt) {
 		bool success = (bool)evt.Params["success"];
 		string error = (string)evt.Params["errorMessage"];
@@ -105,8 +101,7 @@ public class Lobby : MonoBehaviour {
 	public void OnConnectionLost(BaseEvent evt) {
 		Debug.Log("OnConnectionLost");
 		isLoggedIn = false;
-		UnregisterSFSSceneCallbacks();
-		//currentActiveRoom = null;
+		smartFox.RemoveAllEventListeners();
 		roomSelection = -1;	
 		Application.LoadLevel("MainMenu");
 	}
