@@ -219,12 +219,8 @@ public class Lobby : MonoBehaviour {
 		// Login
 		if (!isLoggedIn) {
 			DrawLoginGUI();
-		}
-		
-		else if (smartFox.LastJoinedRoom != null) 
-		{
-			// ****** Show full interface only in the Lobby ******* //
-			//if(currentActiveRoom.Name == "The Lobby")
+		} else if (smartFox.LastJoinedRoom != null) {
+			// Show full interface only in the Lobby
 			if (smartFox.LastJoinedRoom.Name == "The Lobby" && Application.loadedLevelName == "MainMenu")
 			{
 				DrawLobbyGUI();

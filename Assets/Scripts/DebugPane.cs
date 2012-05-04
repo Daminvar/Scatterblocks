@@ -147,6 +147,7 @@ public class DebugPane : MonoBehaviour {
 	
 	private Color getLogTypeColor(LogType type) {
 		switch(type) {
+		case LogType.Exception: return Color.red;
 		case LogType.Error: return Color.red;
 		case LogType.Warning: return Color.yellow;
 		default: return Color.white;
