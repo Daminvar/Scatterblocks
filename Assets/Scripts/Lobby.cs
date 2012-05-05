@@ -303,6 +303,7 @@ public class Lobby : MonoBehaviour {
 					RoomSettings settings = new RoomSettings(username + "'s Room");
 					// how many players allowed
 					settings.MaxUsers = 8;	
+					settings.MaxVariables = 50;
 					settings.IsGame = true;
 				
 					smartFox.Send(new CreateRoomRequest(settings, true, smartFox.LastJoinedRoom));
