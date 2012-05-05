@@ -41,32 +41,45 @@ public class WaitScreenScript : MonoBehaviour {
 			isBlueTeam = true;	
 		}
 		
-		RoomVariable myRoomVar;
 		List<RoomVariable> roomVars = new List<RoomVariable>();
 		
 		if (isBlueTeam)
 		{
 			blueTeam.Add(smartFox.MySelf.Name);
 			foreach(string name in blueTeam)
+			{
 				myTeamUpdate.AddUtfString(name);
+			}
 			roomVars.Add(new SFSRoomVariable("blue", myTeamUpdate));
-			if(!smartFox.LastJoinedRoom.ContainsVariable("blueRobot"))
-				roomVars.Add(new SFSRoomVariable("blueRobot", smartFox.MySelf.Name));
 			
+			if (smartFox.LastJoinedRoom.GetVariable("blueRobot").GetStringValue() == "")
+			{
+				roomVars.Add(new SFSRoomVariable("blueRobot", smartFox.MySelf.Name));
+			}
 		}
 		else
 		{
 			redTeam.Add(smartFox.MySelf.Name);
 			foreach(string name in redTeam)
+			{
 				myTeamUpdate.AddUtfString(name);
+			}
 			roomVars.Add(new SFSRoomVariable("red", myTeamUpdate));
-			if(!smartFox.LastJoinedRoom.ContainsVariable("redRobot"))
+			
+			if (smartFox.LastJoinedRoom.GetVariable("redRobot").GetStringValue() == "")
+			{
 				roomVars.Add(new SFSRoomVariable("redRobot", smartFox.MySelf.Name));
-
+			}
 		}
 		
-		smartFox.Send( new SetRoomVariablesRequest(roomVars));
+		List<RoomVariable> variables = smartFox.LastJoinedRoom.GetVariables();
 		
+		foreach(RoomVariable roomVar in variables)
+		{
+			Debug.Log(roomVar.Name);
+		}
+		
+		smartFox.Send(new SetRoomVariablesRequest(roomVars,smartFox.LastJoinedRoom));
 	}
 	
 	// Update is called once per frame
@@ -78,6 +91,15 @@ public class WaitScreenScript : MonoBehaviour {
 	{
 		screenW = Screen.width;
 				
+		if (smartFox.LastJoinedRoom.ContainsVariable("blueRobot"))
+		{
+			GUI.Label(new Rect(100, 100, 300, 300), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueRobot").GetStringValue());
+		}
+		if (smartFox.LastJoinedRoom.ContainsVariable("redRobot"))
+		{
+			GUI.Label(new Rect(100, 200, 300, 300), "Red: " + smartFox.LastJoinedRoom.GetVariable("redRobot").GetStringValue());
+		}
+		
 		DrawUsersGUI();
 		DrawChatGUI();
 		DrawButtons();
@@ -106,7 +128,8 @@ public class WaitScreenScript : MonoBehaviour {
 		}
 	}
 	
-	void OnRoomVariableUpdate(BaseEvent evt) {
+	void OnRoomVariableUpdate(BaseEvent evt)
+	{
 		UpdateTeamLists();
 	}
 	
@@ -121,18 +144,20 @@ public class WaitScreenScript : MonoBehaviour {
 	
 	private void UpdateTeamLists()
 	{
+		ISFSArray arr = new SFSArray();
+		
 		redTeam.Clear();
 		blueTeam.Clear();
 		RoomVariable redVar = smartFox.LastJoinedRoom.GetVariable("red");
 		RoomVariable blueVar = smartFox.LastJoinedRoom.GetVariable("blue");
 		if(redVar != null) {
-			ISFSArray arr = redVar.GetSFSArrayValue();
+			arr = redVar.GetSFSArrayValue();
 			for(int i = 0; i < arr.Size(); i++) {
 				redTeam.Add(arr.GetUtfString(i));
 			}
 		}
 		if(blueVar != null) {
-			ISFSArray arr = blueVar.GetSFSArrayValue();
+			arr = blueVar.GetSFSArrayValue();
 			for(int i = 0; i < arr.Size(); i++) {
 				blueTeam.Add(arr.GetUtfString(i));
 			}

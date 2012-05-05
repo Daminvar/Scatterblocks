@@ -179,9 +179,9 @@ public class Lobby : MonoBehaviour {
 
 	public void OnUserCountChange(BaseEvent evt) {
 		Room room = (Room)evt.Params["room"];
-		if (room.IsGame ) {
+		//if (room.IsGame ) {
 			SetupRoomList();
-		}
+		//}
 	}
 	
 	void OnPublicMessage(BaseEvent evt) {
@@ -302,9 +302,19 @@ public class Lobby : MonoBehaviour {
 					//let smartfox take care of error if duplicate name
 					RoomSettings settings = new RoomSettings(username + "'s Room");
 					// how many players allowed
-					settings.MaxUsers = 8;	
-					settings.MaxVariables = 50;
+					settings.MaxUsers = 8;
+					settings.MaxVariables = 10;
 					settings.IsGame = true;
+				
+					List<RoomVariable> roomVars = new List<RoomVariable>();
+					roomVars.Add(new SFSRoomVariable("redStored", 0));
+					roomVars.Add(new SFSRoomVariable("blueStored", 0));
+					roomVars.Add(new SFSRoomVariable("redRobot", ""));
+					roomVars.Add(new SFSRoomVariable("blueRobot", ""));
+					roomVars.Add(new SFSRoomVariable("blue", new SFSArray()));
+					roomVars.Add(new SFSRoomVariable("red", new SFSArray()));
+				
+					settings.Variables = roomVars;
 				
 					smartFox.Send(new CreateRoomRequest(settings, true, smartFox.LastJoinedRoom));
 				}

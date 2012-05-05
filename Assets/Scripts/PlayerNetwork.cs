@@ -16,6 +16,8 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	private Vector3 startingTransform;
 	
+	private GameObject goalPlatform;
+	
 	private bool _isBlueTeam;
 	public bool IsBlueTeam {
 		get { return _isBlueTeam; }
@@ -41,8 +43,6 @@ public class PlayerNetwork : MonoBehaviour {
 		get { return farthestDistanceScore; }
 	}
 	
-	private string roomVariableName;
-	
 	// Use this for initialization
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
@@ -51,21 +51,7 @@ public class PlayerNetwork : MonoBehaviour {
 		farthestDistance = 0;
 		farthestDistanceScore = 0;
 		
-		RoomVariable myRoomVar;
-		List<RoomVariable> roomVars = new List<RoomVariable>();
-		
-		if (IsBlueTeam)
-		{
-			roomVariableName = "blueTeamStoredScore";
-			roomVars.Add(new SFSRoomVariable(roomVariableName, 0));
-		}
-		else
-		{
-			roomVariableName = "redTeamStoredScore";
-			roomVars.Add(new SFSRoomVariable(roomVariableName, 0));
-		}
-		
-		smartFox.Send(new SetRoomVariablesRequest(roomVars));
+		//Debug.Log(goalPlatform);
 	}
 	
 	// Update is called once per frame
@@ -75,6 +61,21 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			Die();	
 		}
+		else if (_isBlueTeam)
+		{
+			if (this.transform.position.x > 108)
+			{
+				Debug.Log("Winner!");	
+			}
+		}
+		else
+		{
+			if (this.transform.position.x < -108)
+			{
+				Debug.Log("Winner!");	
+			}	
+		}
+		
 	}
 	
 	void Die()
@@ -82,11 +83,12 @@ public class PlayerNetwork : MonoBehaviour {
 		Debug.Log("AAAAAARRRRRRGH!");
 		
 		float distanceAtDeath;
-		RoomVariable myRoomVar;
 		List<RoomVariable> roomVars = new List<RoomVariable>();
 		
 		if (IsBlueTeam)
 		{
+			Debug.Log("Blue team death!");
+			
 			distanceAtDeath = transform.position.x - (-112);
 			
 			if (distanceAtDeath > farthestDistance)
@@ -96,10 +98,12 @@ public class PlayerNetwork : MonoBehaviour {
 				farthestDistanceScore = (int)((farthestDistance / 224) * 500);
 			}
 			
-			roomVars.Add(new SFSRoomVariable(roomVariableName, farthestDistanceScore));
+			roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
 		}
 		else
 		{
+			Debug.Log("Red team death!");
+			
 			distanceAtDeath = 112 - transform.position.x;
 			
 			if (distanceAtDeath > farthestDistance)
@@ -109,11 +113,16 @@ public class PlayerNetwork : MonoBehaviour {
 				farthestDistanceScore = (int)((farthestDistance / 224) * 500);
 			}
 			
-			roomVars.Add(new SFSRoomVariable(roomVariableName, farthestDistanceScore));
+			roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
 		}
 		
-		smartFox.Send(new SetRoomVariablesRequest(roomVars));
+		smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 		
 		this.transform.position = startingTransform;
+	}
+	
+	void OnCollisionEnter(Collision collision)
+	{
+		
 	}
 }
