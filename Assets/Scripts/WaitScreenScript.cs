@@ -13,7 +13,10 @@ using Sfs2X.Logging;
 
 
 public class WaitScreenScript : MonoBehaviour {
-	public const int MIN_USERS = 3;
+	public int MIN_USERS = 3;
+	public int rounds = 3;
+	
+	private string _roundsString;
 
 	private string newMessage = "";
 	private ArrayList messages = new ArrayList();
@@ -27,6 +30,8 @@ public class WaitScreenScript : MonoBehaviour {
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
 		AddEventListeners();
+		
+		_roundsString = rounds.ToString();
 		
 		UpdateTeamLists();
 		
@@ -80,16 +85,16 @@ public class WaitScreenScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		
 	}
 	
 	void OnGUI() 
 	{
 		screenW = Screen.width;
-		
 		DrawUsersGUI();
 		DrawChatGUI();
 		DrawButtons();
+		if(IsLowestID())
+			DrawHostOptions();
 	}
 	
 	private void AddEventListeners() {
@@ -109,7 +114,7 @@ public class WaitScreenScript : MonoBehaviour {
 			Debug.Log("User " + sender.Name + " said: " + message); 
 		}
 		catch (Exception ex) {
-			Debug.Log("Exception handling public message: "+ex.Message+ex.StackTrace);
+			Debug.LogError("Exception handling public message: "+ex.Message+ex.StackTrace);
 		}
 	}
 	
@@ -155,15 +160,32 @@ public class WaitScreenScript : MonoBehaviour {
 		{
 			smartFox.Send(new JoinRoomRequest("The Lobby"));
 		}
-		if (redTeam.Count + blueTeam.Count >= MIN_USERS && IsLowestID())
-		{
-			if (GUI.Button (new Rect (screenW - 350, 400, 100, 100), "Start Game"))
-			{
+	}
+	
+	private void DrawHostOptions() {
+		GUILayout.BeginArea(new Rect(490, 80, 300, 500));
+		GUILayout.BeginVertical("box");
+		GUILayout.Label("Host Options");
+		GUILayout.Space(10);
+		
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("Rounds: ");
+		_roundsString = GUILayout.TextField(_roundsString, 25, GUILayout.Width(70));
+		GUILayout.EndHorizontal();
+		
+		int currentRounds = 0;
+		if (int.TryParse(_roundsString, out currentRounds)
+			&& redTeam.Count + blueTeam.Count >= MIN_USERS) {
+			if (GUILayout.Button ("Start Game")) {
 				ISFSObject sendJoinMessage = new SFSObject();
 				sendJoinMessage.PutUtfString("type", "everyoneJoin");
 				smartFox.Send(new ObjectMessageRequest(sendJoinMessage, null, smartFox.LastJoinedRoom.UserList));
+				var rounds = new SFSRoomVariable("rounds", currentRounds);
+				smartFox.Send(new SetRoomVariablesRequest(new [] { rounds }, smartFox.LastJoinedRoom));
 			}
 		}
+		GUILayout.EndVertical();
+		GUILayout.EndArea();
 	}
 	
 	private void DrawUsersGUI(){
