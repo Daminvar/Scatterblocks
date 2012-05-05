@@ -313,6 +313,8 @@ public class Lobby : MonoBehaviour {
 					roomVars.Add(new SFSRoomVariable("blueRobot", ""));
 					roomVars.Add(new SFSRoomVariable("blue", new SFSArray()));
 					roomVars.Add(new SFSRoomVariable("red", new SFSArray()));
+					roomVars.Add(new SFSRoomVariable("rounds", 0));
+					roomVars.Add(new SFSRoomVariable("currentRound", 1));
 				
 					settings.Variables = roomVars;
 				
