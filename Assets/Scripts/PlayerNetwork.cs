@@ -17,6 +17,7 @@ public class PlayerNetwork : MonoBehaviour {
 	private Vector3 startingTransform;
 	
 	private GameObject goalPlatform;
+	private GameObject lastCollision;
 	
 	private bool _isBlueTeam;
 	public bool IsBlueTeam {
@@ -61,21 +62,6 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			Die();	
 		}
-		else if (_isBlueTeam)
-		{
-			if (this.transform.position.x > 108)
-			{
-				Debug.Log("Winner!");	
-			}
-		}
-		else
-		{
-			if (this.transform.position.x < -108)
-			{
-				Debug.Log("Winner!");	
-			}	
-		}
-		
 	}
 	
 	void Die()
@@ -121,8 +107,68 @@ public class PlayerNetwork : MonoBehaviour {
 		this.transform.position = startingTransform;
 	}
 	
-	void OnCollisionEnter(Collision collision)
+	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		
+		if(hit.collider.gameObject.tag == "Block")
+		{
+			List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
+			
+			int blockIndex;
+			
+			//Unlock old block, if any.
+			if (lastCollision != null && hit.collider.gameObject != lastCollision)
+			{
+				blockIndex = blockList.IndexOf(lastCollision);
+				
+				var unlockBlock = new SFSObject();
+			
+				unlockBlock.PutInt("index", blockIndex);
+				unlockBlock.PutUtfString("type", "unlock");
+			
+				smartFox.Send(new ObjectMessageRequest(unlockBlock, null, smartFox.LastJoinedRoom.UserList));
+			}
+			
+			//Lock new block.
+			
+			blockIndex = blockList.IndexOf(hit.collider.gameObject);
+				
+			lastCollision = blockList[blockIndex];
+			
+			var lockBlock = new SFSObject();
+			
+			lockBlock.PutInt("index", blockIndex);
+			lockBlock.PutUtfString("type", "lock");
+			
+			smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
+			
+		}
+		else if (IsBlueTeam)
+		{
+			if (hit.collider.gameObject.tag == "BlueGoal" && transform.position.y >= 26.9)
+			{
+				farthestDistance = 224;
+				
+				List<RoomVariable> roomVars = new List<RoomVariable>();
+				
+				Debug.Log("Blue team wins the round!");
+				roomVars.Add(new SFSRoomVariable("blueStored", 500));
+				
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}
+		else
+		{
+			if (hit.collider.gameObject.tag == "RedGoal" && transform.position.y >= 26.9)
+			{
+				farthestDistance = 224;
+				
+				List<RoomVariable> roomVars = new List<RoomVariable>();
+				
+				Debug.Log("Red team wins the round!");	
+				roomVars.Add(new SFSRoomVariable("redStored", 500));
+				
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}
 	}
 }

@@ -178,27 +178,27 @@ public class GameManager : MonoBehaviour {
 	{
 		if (smartFox.LastJoinedRoom.ContainsVariable("blueStored") && smartFox.LastJoinedRoom.ContainsVariable("redStored"))
 		{
-			GUI.Label(new Rect(50, 50, 50, 50),"Blue: " + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue());
-			GUI.Label(new Rect(50, 70, 50, 50),"Red: " + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue());
+			GUI.Label(new Rect(50, 50, 100, 50),"Blue: " + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue());
+			GUI.Label(new Rect(50, 70, 100, 50),"Red: " + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue());
 		}
-		else
-		{
-			if (smartFox.LastJoinedRoom.ContainsVariable("blueStored"))
-			{
-				GUI.Label(new Rect(50, 50, 50, 50),"Blue Team Stored Score");
-			}
 		
-		 	if (smartFox.LastJoinedRoom.ContainsVariable("redStored"))
-			{
-				GUI.Label(new Rect(250, 50, 50, 50),"Red Team Stored Score");
-			}
-			
+	 	if (smartFox.LastJoinedRoom.ContainsVariable("redStored"))
+		{
+			GUI.Label(new Rect(250, 50, 50, 50),"Red Team Stored Score");
 		}
 		
 		if (countDownStarted)
 		{
 			DrawCountDown();	
 		}
+		
+		GUI.BeginGroup(new Rect(0, 200, 125, 100));
+		
+		GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard");
+		GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " + [" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]");
+		GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " + [" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
+		
+		GUI.EndGroup();
 	}
 	
 	private void DrawCountDown()
@@ -225,8 +225,6 @@ public class GameManager : MonoBehaviour {
 					countDownStarted = false;
 				}
 			}
-			
-
 		}
 	}
 	
@@ -250,6 +248,10 @@ public class GameManager : MonoBehaviour {
 			recieveExplosionForce(msg);
 		if(msg.GetUtfString("type") == "sync")
 			syncBlocks(msg);
+		if(msg.GetUtfString("type") == "lock")
+			lockBlock(msg);
+		if(msg.GetUtfString("type") == "unlock")
+			unlockBlock(msg);
 	}
 	
 	private void recieveExplosionForce(ISFSObject msg) {
@@ -284,6 +286,16 @@ public class GameManager : MonoBehaviour {
 			_blocks[i].transform.position = new Vector3(coordinates[0], _blocks[i].transform.position.y, coordinates[1]);
 			_blocks[i].rigidbody.velocity = new Vector3(velocityComponents[0], 0, velocityComponents[1]);
 		}
+	}
+	
+	private void lockBlock(ISFSObject msg)
+	{
+		_blocks[msg.GetInt("index")].rigidbody.isKinematic = true;
+	}
+	
+	private void unlockBlock(ISFSObject msg)
+	{
+		_blocks[msg.GetInt("index")].rigidbody.isKinematic = false;
 	}
 	
 	//TODO: This should be refactored.

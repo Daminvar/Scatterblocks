@@ -306,16 +306,20 @@ public class Lobby : MonoBehaviour {
 					RoomSettings settings = new RoomSettings(username + "'s Room");
 					// how many players allowed
 					settings.MaxUsers = 8;
-					settings.MaxVariables = 10;
+					settings.MaxVariables = 50;
 					settings.IsGame = true;
 				
 					List<RoomVariable> roomVars = new List<RoomVariable>();
 					roomVars.Add(new SFSRoomVariable("redStored", 0));
 					roomVars.Add(new SFSRoomVariable("blueStored", 0));
+					roomVars.Add(new SFSRoomVariable("redTotalScore", 0));
+					roomVars.Add(new SFSRoomVariable("blueTotalScore", 0));
 					roomVars.Add(new SFSRoomVariable("redRobot", ""));
 					roomVars.Add(new SFSRoomVariable("blueRobot", ""));
 					roomVars.Add(new SFSRoomVariable("blue", new SFSArray()));
 					roomVars.Add(new SFSRoomVariable("red", new SFSArray()));
+					roomVars.Add(new SFSRoomVariable("rounds", 0));
+					roomVars.Add(new SFSRoomVariable("currentRound", 1));
 				
 					settings.Variables = roomVars;
 				
