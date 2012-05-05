@@ -39,6 +39,7 @@ public class NetworkTransformSender : MonoBehaviour {
 	}
 	
 	void SendTransform() {
+		
 		if (timeLastSending >= sendingPeriod) 
 		{
 			ISFSObject obj = NetworkHelper.TransformToSFSObject(transform.position, transform.localEulerAngles);

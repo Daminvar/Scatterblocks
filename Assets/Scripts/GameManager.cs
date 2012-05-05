@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sfs2X;
 using Sfs2X.Core;
@@ -27,12 +28,23 @@ public class GameManager : MonoBehaviour {
 	private GameObject[] _blocks;
 		
 	private Vector3 targetPosition;
-
+	
+	private bool countDownStarted = false;
+	private float countDownTime;
+	private const int COUNT_DOWN_SECONDS = 10;
+	
+	private GameObject player;
+	
+	private GameObject redRobot;
+	private GameObject blueRobot;
+	
+	private bool isHost = false;
+	
 	// Use this for initialization
 	void Start ()
 	{
 		smartFox = SmartFoxConnection.Connection;
-		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
+		
 		setCurrentTeam();
 				
 		targetPosition = new Vector3(0,0,0);	
@@ -43,16 +55,16 @@ public class GameManager : MonoBehaviour {
 		
 		if(thirdPerson)
 		{
-			GameObject player;
+			
 			if(isBlueTeam) {
 				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
-				var redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
+				redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
 				redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			} else {
 				player = Instantiate(Player, RED_START, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = false;
-				var blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+				blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 				blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 			}
 			var cam = Instantiate(PlayerCamera) as GameObject;
@@ -64,14 +76,70 @@ public class GameManager : MonoBehaviour {
 		{
 			var cam = Instantiate(RTSCamera, new Vector3(0, 200, 0), Quaternion.identity) as GameObject;
 			cam.transform.LookAt(new Vector3(0, 0, 0));
-			GameObject redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
-			GameObject blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+			redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
+			blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 		}
 		
+		
 		if(IsLowestID())
 			InvokeRepeating("sendBlockData", BLOCK_SYNC_INTERVAL, BLOCK_SYNC_INTERVAL);
+		
+		
+		ResetEventListeners();
+		
+		RoomVariable countdownChecker = smartFox.LastJoinedRoom.GetVariable("countdownToggle");
+		
+		if (countdownChecker == null)
+		{
+			Debug.Log("countdownchecker is null");
+			
+			if (IsLowestID())
+			{
+				List<RoomVariable> roomVars = new List<RoomVariable>();
+				RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", true);
+				roomVars.Add(countdownToggle);
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}
+	}
+	
+	private void ResetEventListeners()
+	{
+		smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
+		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
+		
+		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+	}
+	
+	private void OnRoomVariableUpdate( BaseEvent evt )
+	{
+		Debug.Log("room var update");
+			
+		ArrayList changedVars = (ArrayList)evt.Params["changedVars"];
+		
+		foreach (string item in changedVars) {
+			
+			if (item == "countdownToggle")
+			{
+				if (smartFox.LastJoinedRoom.GetVariable(item).GetBoolValue())
+				{
+					countDownStarted = true;
+					countDownTime = Time.time;
+				}
+				else
+				{
+					smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
+		
+					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+					
+					Application.LoadLevel(Application.loadedLevel);
+				}
+			}
+		}
+	
 	}
 	
 	private void setCurrentTeam() {
@@ -124,6 +192,41 @@ public class GameManager : MonoBehaviour {
 			{
 				GUI.Label(new Rect(250, 50, 50, 50),"Red Team Stored Score");
 			}
+			
+		}
+		
+		if (countDownStarted)
+		{
+			DrawCountDown();	
+		}
+	}
+	
+	private void DrawCountDown()
+	{
+		if (countDownStarted)
+		{
+			int timeleft = (int)(COUNT_DOWN_SECONDS - (Time.time - countDownTime));
+			
+			GUIStyle funstyle = new GUIStyle();
+			funstyle.fontSize = 50;
+			funstyle.normal.textColor = Color.white;
+			GUILayout.BeginArea(new Rect(Screen.width/2 - 160, 250, 450, 70));
+			GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
+			GUILayout.EndArea();
+			
+			if (timeleft <= 0)
+			{
+				if (IsLowestID())
+				{
+					List<RoomVariable> roomVars = new List<RoomVariable>();
+					RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", false);
+					roomVars.Add(countdownToggle);
+					smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+					countDownStarted = false;
+				}
+			}
+			
+
 		}
 	}
 	
@@ -141,7 +244,7 @@ public class GameManager : MonoBehaviour {
 		smartFox.Send (new ObjectMessageRequest(obj));
 	}
 	
-	private void onMessage(BaseEvent evt) {
+	private void OnMessage(BaseEvent evt) {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
 		if(msg.GetUtfString("type") == "explosion")
 			recieveExplosionForce(msg);

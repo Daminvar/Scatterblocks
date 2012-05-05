@@ -56,6 +56,9 @@ public class Lobby : MonoBehaviour {
 		}
 		
 		smartFox.AddLogListener(LogLevel.INFO, OnDebugMessage);
+		//smartFox.AddLogListener(LogLevel.DEBUG, OnDebugMessage);
+		smartFox.AddLogListener(LogLevel.ERROR, OnDebugMessage);
+		smartFox.AddLogListener(LogLevel.WARN, OnDebugMessage);
 		screenW = Screen.width;
 	}
 	
