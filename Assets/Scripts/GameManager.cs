@@ -68,7 +68,6 @@ public class GameManager : MonoBehaviour {
 			GameObject blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
-
 		}
 		
 		if(IsLowestID())
@@ -90,9 +89,13 @@ public class GameManager : MonoBehaviour {
 	private bool isRobot() {
 		RoomVariable redbot = smartFox.LastJoinedRoom.GetVariable("redRobot");
 		RoomVariable bluebot = smartFox.LastJoinedRoom.GetVariable("blueRobot");
+		
+		Debug.Log(redbot);
+		Debug.Log(bluebot);
+		
 		if(redbot.GetStringValue() == smartFox.MySelf.Name)
 			return true;
-		if(bluebot.GetStringValue() == smartFox.MySelf.Name)
+		else if(bluebot.GetStringValue() == smartFox.MySelf.Name)
 			return true;
 		return false;
 	}
@@ -105,7 +108,23 @@ public class GameManager : MonoBehaviour {
 	
 	void OnGUI ()
 	{
+		if (smartFox.LastJoinedRoom.ContainsVariable("blueStored") && smartFox.LastJoinedRoom.ContainsVariable("redStored"))
+		{
+			GUI.Label(new Rect(50, 50, 50, 50),"Blue: " + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue());
+			GUI.Label(new Rect(50, 70, 50, 50),"Red: " + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue());
+		}
+		else
+		{
+			if (smartFox.LastJoinedRoom.ContainsVariable("blueStored"))
+			{
+				GUI.Label(new Rect(50, 50, 50, 50),"Blue Team Stored Score");
+			}
 		
+		 	if (smartFox.LastJoinedRoom.ContainsVariable("redStored"))
+			{
+				GUI.Label(new Rect(250, 50, 50, 50),"Red Team Stored Score");
+			}
+		}
 	}
 	
 	private void sendBlockData() {
