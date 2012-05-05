@@ -143,6 +143,10 @@ public class GameManager : MonoBehaviour {
 			recieveExplosionForce(msg);
 		if(msg.GetUtfString("type") == "sync")
 			syncBlocks(msg);
+		if(msg.GetUtfString("type") == "lock")
+			lockBlock(msg);
+		if(msg.GetUtfString("type") == "unlock")
+			unlockBlock(msg);
 	}
 	
 	private void recieveExplosionForce(ISFSObject msg) {
@@ -177,6 +181,16 @@ public class GameManager : MonoBehaviour {
 			_blocks[i].transform.position = new Vector3(coordinates[0], _blocks[i].transform.position.y, coordinates[1]);
 			_blocks[i].rigidbody.velocity = new Vector3(velocityComponents[0], 0, velocityComponents[1]);
 		}
+	}
+	
+	private void lockBlock(ISFSObject msg)
+	{
+		_blocks[msg.GetInt("index")].rigidbody.isKinematic = true;
+	}
+	
+	private void unlockBlock(ISFSObject msg)
+	{
+		_blocks[msg.GetInt("index")].rigidbody.isKinematic = false;
 	}
 	
 	//TODO: This should be refactored.

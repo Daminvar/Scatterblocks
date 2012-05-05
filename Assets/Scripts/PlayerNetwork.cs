@@ -17,6 +17,7 @@ public class PlayerNetwork : MonoBehaviour {
 	private Vector3 startingTransform;
 	
 	private GameObject goalPlatform;
+	private GameObject lastCollision;
 	
 	private bool _isBlueTeam;
 	public bool IsBlueTeam {
@@ -108,9 +109,42 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		if (IsBlueTeam)
+		if(hit.collider.gameObject.tag == "Block")
 		{
-			if (hit.collider.gameObject == GameObject.FindGameObjectWithTag("BlueGoal") && transform.position.y >= 26.9)
+			List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
+			
+			int blockIndex;
+			
+			//Unlock old block, if any.
+			if (lastCollision != null && hit.collider.gameObject != lastCollision)
+			{
+				blockIndex = blockList.IndexOf(lastCollision);
+				
+				var unlockBlock = new SFSObject();
+			
+				unlockBlock.PutInt("index", blockIndex);
+				unlockBlock.PutUtfString("type", "unlock");
+			
+				smartFox.Send(new ObjectMessageRequest(unlockBlock, null, smartFox.LastJoinedRoom.UserList));
+			}
+			
+			//Lock new block.
+			
+			blockIndex = blockList.IndexOf(hit.collider.gameObject);
+				
+			lastCollision = blockList[blockIndex];
+			
+			var lockBlock = new SFSObject();
+			
+			lockBlock.PutInt("index", blockIndex);
+			lockBlock.PutUtfString("type", "lock");
+			
+			smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
+			
+		}
+		else if (IsBlueTeam)
+		{
+			if (hit.collider.gameObject.tag == "BlueGoal" && transform.position.y >= 26.9)
 			{
 				farthestDistance = 224;
 				
@@ -124,7 +158,7 @@ public class PlayerNetwork : MonoBehaviour {
 		}
 		else
 		{
-			if (hit.collider.gameObject == GameObject.FindGameObjectWithTag("RedGoal") && transform.position.y >= 26.9)
+			if (hit.collider.gameObject.tag == "RedGoal" && transform.position.y >= 26.9)
 			{
 				farthestDistance = 224;
 				
