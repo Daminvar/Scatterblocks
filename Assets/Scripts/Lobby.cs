@@ -309,6 +309,8 @@ public class Lobby : MonoBehaviour {
 					List<RoomVariable> roomVars = new List<RoomVariable>();
 					roomVars.Add(new SFSRoomVariable("redStored", 0));
 					roomVars.Add(new SFSRoomVariable("blueStored", 0));
+					roomVars.Add(new SFSRoomVariable("redTotalScore", 0));
+					roomVars.Add(new SFSRoomVariable("blueTotalScore", 0));
 					roomVars.Add(new SFSRoomVariable("redRobot", ""));
 					roomVars.Add(new SFSRoomVariable("blueRobot", ""));
 					roomVars.Add(new SFSRoomVariable("blue", new SFSArray()));

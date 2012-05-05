@@ -86,15 +86,6 @@ public class WaitScreenScript : MonoBehaviour {
 	void OnGUI() 
 	{
 		screenW = Screen.width;
-				
-		if (smartFox.LastJoinedRoom.ContainsVariable("blueRobot"))
-		{
-			GUI.Label(new Rect(100, 100, 300, 300), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueRobot").GetStringValue());
-		}
-		if (smartFox.LastJoinedRoom.ContainsVariable("redRobot"))
-		{
-			GUI.Label(new Rect(100, 200, 300, 300), "Red: " + smartFox.LastJoinedRoom.GetVariable("redRobot").GetStringValue());
-		}
 		
 		DrawUsersGUI();
 		DrawChatGUI();

@@ -61,21 +61,6 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			Die();	
 		}
-		else if (_isBlueTeam)
-		{
-			if (this.transform.position.x > 108)
-			{
-				Debug.Log("Winner!");	
-			}
-		}
-		else
-		{
-			if (this.transform.position.x < -108)
-			{
-				Debug.Log("Winner!");	
-			}	
-		}
-		
 	}
 	
 	void Die()
@@ -121,8 +106,35 @@ public class PlayerNetwork : MonoBehaviour {
 		this.transform.position = startingTransform;
 	}
 	
-	void OnCollisionEnter(Collision collision)
+	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		
+		if (IsBlueTeam)
+		{
+			if (hit.collider.gameObject == GameObject.FindGameObjectWithTag("BlueGoal") && transform.position.y >= 26.9)
+			{
+				farthestDistance = 224;
+				
+				List<RoomVariable> roomVars = new List<RoomVariable>();
+				
+				Debug.Log("Blue team wins the round!");
+				roomVars.Add(new SFSRoomVariable("blueStored", 500));
+				
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}
+		else
+		{
+			if (hit.collider.gameObject == GameObject.FindGameObjectWithTag("RedGoal") && transform.position.y >= 26.9)
+			{
+				farthestDistance = 224;
+				
+				List<RoomVariable> roomVars = new List<RoomVariable>();
+				
+				Debug.Log("Red team wins the round!");	
+				roomVars.Add(new SFSRoomVariable("redStored", 500));
+				
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}
 	}
 }
