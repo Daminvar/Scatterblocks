@@ -80,33 +80,10 @@ public class WaitScreenScript : MonoBehaviour {
 	}
 	
 	private void AddEventListeners() {
-		
-		//smartFox.RemoveAllEventListeners();
-		
-		smartFox.AddEventListener(SFSEvent.CONNECTION_LOST, OnConnectionLost);
-		smartFox.AddEventListener(SFSEvent.LOGOUT, OnLogout);
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessage);
 		//smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
-	}
-	
-	public void OnConnectionLost(BaseEvent evt) {
-		/*Debug.Log("OnConnectionLost");
-		isLoggedIn = false;
-		UnregisterSFSSceneCallbacks();
-		currentActiveRoom = null;
-		roomSelection = -1;	
-		Application.LoadLevel("The Lobby");
-		*/
-	}
-	
-	void OnLogout(BaseEvent evt) {
-		/*Debug.Log("OnLogout");
-		isLoggedIn = false;
-		currentActiveRoom = null;
-		smartFox.Disconnect();
-		*/
 	}
 	
 	void OnPublicMessage(BaseEvent evt) {
