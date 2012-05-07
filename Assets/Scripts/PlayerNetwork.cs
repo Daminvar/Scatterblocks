@@ -73,8 +73,6 @@ public class PlayerNetwork : MonoBehaviour {
 		
 		if (IsBlueTeam)
 		{
-			Debug.Log("Blue team death!");
-			
 			distanceAtDeath = transform.position.x - (-112);
 			
 			if (distanceAtDeath > farthestDistance)
@@ -88,8 +86,6 @@ public class PlayerNetwork : MonoBehaviour {
 		}
 		else
 		{
-			Debug.Log("Red team death!");
-			
 			distanceAtDeath = 112 - transform.position.x;
 			
 			if (distanceAtDeath > farthestDistance)
