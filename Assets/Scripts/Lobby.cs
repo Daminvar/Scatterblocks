@@ -56,6 +56,9 @@ public class Lobby : MonoBehaviour {
 		}
 		
 		smartFox.AddLogListener(LogLevel.INFO, OnDebugMessage);
+		//smartFox.AddLogListener(LogLevel.DEBUG, OnDebugMessage);
+		smartFox.AddLogListener(LogLevel.ERROR, OnDebugMessage);
+		smartFox.AddLogListener(LogLevel.WARN, OnDebugMessage);
 		screenW = Screen.width;
 	}
 	
@@ -303,7 +306,7 @@ public class Lobby : MonoBehaviour {
 					RoomSettings settings = new RoomSettings(username + "'s Room");
 					// how many players allowed
 					settings.MaxUsers = 8;
-					settings.MaxVariables = 10;
+					settings.MaxVariables = 50;
 					settings.IsGame = true;
 				
 					List<RoomVariable> roomVars = new List<RoomVariable>();
