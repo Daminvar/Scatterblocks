@@ -116,8 +116,6 @@ public class GameManager : MonoBehaviour {
 	
 	private void OnRoomVariableUpdate( BaseEvent evt )
 	{
-		Debug.Log("room var update");
-			
 		ArrayList changedVars = (ArrayList)evt.Params["changedVars"];
 		
 		foreach (string item in changedVars) {
@@ -132,9 +130,7 @@ public class GameManager : MonoBehaviour {
 				else
 				{
 					smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
-		
 					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
-					
 					Application.LoadLevel(Application.loadedLevel);
 				}
 			}
@@ -176,17 +172,6 @@ public class GameManager : MonoBehaviour {
 	
 	void OnGUI ()
 	{
-		if (smartFox.LastJoinedRoom.ContainsVariable("blueStored") && smartFox.LastJoinedRoom.ContainsVariable("redStored"))
-		{
-			GUI.Label(new Rect(50, 50, 100, 50),"Blue: " + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue());
-			GUI.Label(new Rect(50, 70, 100, 50),"Red: " + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue());
-		}
-		
-	 	if (smartFox.LastJoinedRoom.ContainsVariable("redStored"))
-		{
-			GUI.Label(new Rect(250, 50, 50, 50),"Red Team Stored Score");
-		}
-		
 		if (countDownStarted)
 		{
 			DrawCountDown();	

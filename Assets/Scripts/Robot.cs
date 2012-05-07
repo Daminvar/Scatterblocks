@@ -33,12 +33,17 @@ public class Robot : MonoBehaviour {
 	private float prevTime;
 	private float mostRecentTime;
 	
-	private bool firstUpdate = true;
+	private bool firstUpdate;
 	
 	void Start () {
+		firstUpdate = true;
 		smartFox = SmartFoxConnection.Connection;
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 
+	}
+	
+	void OnDestroy() {
+		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 	}
 	
 	void FixedUpdate()
@@ -60,10 +65,8 @@ public class Robot : MonoBehaviour {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
 		if(msg.GetUtfString("type") == "transform" && msg.GetBool("isBlue") == IsBlueTeam)
 		{
-			Debug.Log("updating pos");
 			updateInterpolationData(msg);
 			updateRobotPosition(msg);
-			updateRobotAngle(msg);
 		}
 	}
 	
@@ -74,9 +77,7 @@ public class Robot : MonoBehaviour {
 		if (firstUpdate)
 		{
 			mostRecentTrans = nTrans;
-			
 			mostRecentAngle = nAngle;
-			
 			firstUpdate = false;
 		}
 		
@@ -143,11 +144,6 @@ public class Robot : MonoBehaviour {
 	
 	private void updateRobotPosition(ISFSObject obj) {
 		NetworkHelper.SFSObjectToTransform(obj, transform);
-	}
-	
-	private void updateRobotAngle(ISFSObject obj)
-	{
-		transform.localEulerAngles = NetworkHelper.GetSFSRotation(obj);
 	}
 	
 	private Vector3 FixAngles(Vector3 sourceAngle)
