@@ -260,7 +260,8 @@ public class GameManager : MonoBehaviour {
 				else
 					targetPosition -= new Vector3(0, 0, extents.z);
 			}
-			block.GetComponent<Rigidbody>().AddExplosionForce(50.0f, targetPosition, 25.0f, 0.0f, ForceMode.Impulse);
+
+			block.GetComponent<Rigidbody>().AddExplosionForce(force, targetPosition, 25.0f, 0.0f, ForceMode.Impulse);
 		}
 	}
 	
