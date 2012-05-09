@@ -33,6 +33,10 @@ public class GameManager : MonoBehaviour {
 	private float countDownTime;
 	private const int COUNT_DOWN_SECONDS = 10;
 	
+	private bool roundStarted = false;
+	private float roundTime;
+	private const int ROUND_SECONDS = 30;
+	
 	private GameObject player;
 	
 	private GameObject redRobot;
@@ -103,6 +107,12 @@ public class GameManager : MonoBehaviour {
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
+		else
+		{
+			Debug.Log("Starting round countdown");
+			roundStarted = true;
+			roundTime = Time.time;
+		}
 	}
 	
 	private void ResetEventListeners()
@@ -167,7 +177,6 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		
 	}
 	
 	void OnGUI ()
@@ -175,6 +184,10 @@ public class GameManager : MonoBehaviour {
 		if (countDownStarted)
 		{
 			DrawCountDown();	
+		}
+		else if (roundStarted)
+		{
+			DrawRoundTime();
 		}
 		
 		GUI.BeginGroup(new Rect(0, 200, 125, 100));
@@ -189,28 +202,38 @@ public class GameManager : MonoBehaviour {
 	
 	private void DrawCountDown()
 	{
-		if (countDownStarted)
+		int timeleft = (int)(COUNT_DOWN_SECONDS - (Time.time - countDownTime));
+		
+		GUIStyle funstyle = new GUIStyle();
+		funstyle.fontSize = 50;
+		funstyle.normal.textColor = Color.white;
+		GUILayout.BeginArea(new Rect(Screen.width/2 - 160, 250, 450, 70));
+		GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
+		GUILayout.EndArea();
+		
+		if (timeleft <= 0 && IsLowestID())
 		{
-			int timeleft = (int)(COUNT_DOWN_SECONDS - (Time.time - countDownTime));
-			
-			GUIStyle funstyle = new GUIStyle();
-			funstyle.fontSize = 50;
-			funstyle.normal.textColor = Color.white;
-			GUILayout.BeginArea(new Rect(Screen.width/2 - 160, 250, 450, 70));
-			GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
-			GUILayout.EndArea();
-			
-			if (timeleft <= 0)
-			{
-				if (IsLowestID())
-				{
-					List<RoomVariable> roomVars = new List<RoomVariable>();
-					RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", false);
-					roomVars.Add(countdownToggle);
-					smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
-					countDownStarted = false;
-				}
-			}
+			List<RoomVariable> roomVars = new List<RoomVariable>();
+			RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", false);
+			roomVars.Add(countdownToggle);
+			smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			countDownStarted = false;
+		}
+	}
+	
+	//TODO: Refactor
+	private void DrawRoundTime()
+	{
+		int timeleft = (int)(ROUND_SECONDS - (Time.time - roundTime));
+		
+		GUIStyle funstyle = new GUIStyle();
+		funstyle.fontSize = 32;
+		funstyle.normal.textColor = Color.white;
+		GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
+		
+		if (timeleft <= 0)
+		{
+			Debug.Log("Time's up");
 		}
 	}
 	
