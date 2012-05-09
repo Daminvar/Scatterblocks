@@ -238,6 +238,8 @@ public class GameManager : MonoBehaviour {
 			lockBlock(msg);
 		if(msg.GetUtfString("type") == "unlock")
 			unlockBlock(msg);
+		if(msg.GetUtfString("type") == "roundOver")
+			ShowResultsScreen();
 	}
 	
 	private void recieveExplosionForce(ISFSObject msg) {
@@ -297,5 +299,10 @@ public class GameManager : MonoBehaviour {
 				lowestUserID = userIDToCheck;
 		}
 		return myID == lowestUserID;
+	}
+	
+	private void ShowResultsScreen()
+	{
+		
 	}
 }

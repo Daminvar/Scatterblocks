@@ -15,6 +15,10 @@ public class PlayerNetwork : MonoBehaviour {
 	private SmartFox smartFox;
 	
 	private Vector3 startingTransform;
+	public Vector3 StartingTransform
+	{
+		get { return startingTransform; }	
+	}
 	
 	private GameObject goalPlatform;
 	private GameObject lastCollision;
@@ -68,37 +72,40 @@ public class PlayerNetwork : MonoBehaviour {
 	{
 		Debug.Log("AAAAAARRRRRRGH!");
 		
-		float distanceAtDeath;
-		List<RoomVariable> roomVars = new List<RoomVariable>();
-		
-		if (IsBlueTeam)
+		if (!smartFox.LastJoinedRoom.GetVariable("countdownToggle").GetBoolValue())
 		{
-			distanceAtDeath = transform.position.x - (-112);
+			float distanceAtDeath;
+			List<RoomVariable> roomVars = new List<RoomVariable>();
 			
-			if (distanceAtDeath > farthestDistance)
+			if (IsBlueTeam)
 			{
-				farthestDistance = distanceAtDeath;
-		
-				farthestDistanceScore = (int)((farthestDistance / 224) * 500);
+				distanceAtDeath = transform.position.x - (-112);
+				
+				if (distanceAtDeath > farthestDistance)
+				{
+					farthestDistance = distanceAtDeath;
+			
+					farthestDistanceScore = (int)((farthestDistance / 224) * 500);
+				}
+				
+				roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
+			}
+			else
+			{
+				distanceAtDeath = 112 - transform.position.x;
+				
+				if (distanceAtDeath > farthestDistance)
+				{
+					farthestDistance = distanceAtDeath;
+			
+					farthestDistanceScore = (int)((farthestDistance / 224) * 500);
+				}
+				
+				roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
 			}
 			
-			roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
+			smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 		}
-		else
-		{
-			distanceAtDeath = 112 - transform.position.x;
-			
-			if (distanceAtDeath > farthestDistance)
-			{
-				farthestDistance = distanceAtDeath;
-		
-				farthestDistanceScore = (int)((farthestDistance / 224) * 500);
-			}
-			
-			roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
-		}
-		
-		smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 		
 		this.transform.position = startingTransform;
 	}
@@ -145,10 +152,12 @@ public class PlayerNetwork : MonoBehaviour {
 				farthestDistance = 224;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
-				
-				Debug.Log("Blue team wins the round!");
 				roomVars.Add(new SFSRoomVariable("blueStored", 500));
 				
+				ISFSObject sendRoundOverObject = new SFSObject();
+				sendRoundOverObject.PutUtfString("type", "roundOver");
+					
+				smartFox.Send(new ObjectMessageRequest(sendRoundOverObject, null, smartFox.LastJoinedRoom.UserList));		
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
@@ -159,10 +168,12 @@ public class PlayerNetwork : MonoBehaviour {
 				farthestDistance = 224;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
-				
-				Debug.Log("Red team wins the round!");	
 				roomVars.Add(new SFSRoomVariable("redStored", 500));
 				
+				ISFSObject sendRoundOverObject = new SFSObject();
+				sendRoundOverObject.PutUtfString("type", "roundOver");
+					
+				smartFox.Send(new ObjectMessageRequest(sendRoundOverObject, null, smartFox.LastJoinedRoom.UserList));
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
