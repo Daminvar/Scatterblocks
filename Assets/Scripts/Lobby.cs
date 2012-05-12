@@ -223,23 +223,39 @@ public class Lobby : MonoBehaviour {
 	}
 	
 	private void DrawLoginGUI(){
-		GUI.Label(new Rect(10, 90, 100, 100), "Username: ");
-		username = GUI.TextField(new Rect(100, 90, 200, 20), username, 25); 
+        GUILayout.BeginArea(new Rect(50, 50, 300, 400), "box");
+        GUILayout.BeginVertical();
+
+        GUILayout.BeginHorizontal();
+		GUILayout.Label("Username: ");
+		username = GUILayout.TextField(username, 25, GUILayout.Width(200)); 
+        GUILayout.EndHorizontal();
 	
-		GUI.Label(new Rect(10, 180, 100, 100), "Server: ");
-		serverName = GUI.TextField(new Rect(100, 180, 200, 20), serverName, 25);
+        GUILayout.BeginHorizontal();
+		GUILayout.Label("Server: ");
+		serverName = GUILayout.TextField(serverName, 25, GUILayout.Width(200));
+        GUILayout.EndHorizontal();
 
-		GUI.Label(new Rect(10, 210, 100, 100), "Port: ");
-		serverPort = int.Parse(GUI.TextField(new Rect(100, 210, 200, 20), serverPort.ToString(), 4));
+        GUILayout.BeginHorizontal();
+		GUILayout.Label("Port: ");
+		serverPort = int.Parse(GUILayout.TextField(serverPort.ToString(), 4, GUILayout.Width(50)));
+        GUILayout.EndHorizontal();
 
-		GUI.Label(new Rect(10, 240, 100, 100), loginErrorMessage);
+        GUILayout.Space(10);
 
-		if (GUI.Button(new Rect(100, 270, 100, 24), "Login")  || 
-	    (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
+		GUILayout.Label(loginErrorMessage);
+
+        GUILayout.BeginHorizontal();
+		if (GUILayout.Button("Login", GUILayout.Width(100))  || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
 		{
 			AddEventListeners();
 			smartFox.Connect(serverName, serverPort);
-		}	
+		}
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
 	}
 			
 	private void DrawLobbyGUI(){
