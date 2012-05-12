@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour {
 	
 	private bool roundStarted = false;
 	private float roundTime;
-	private const int ROUND_SECONDS = 5;
+	private const int ROUND_SECONDS = 30;
 	
 	private GameObject player;
 	
@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour {
 			if(isBlueTeam) {
 				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
+				
 				redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
 				redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			} else {
@@ -68,10 +69,13 @@ public class GameManager : MonoBehaviour {
 				blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 				blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 			}
+			
 			var cam = Instantiate(PlayerCamera) as GameObject;
 			var smoothFollow = cam.GetComponent<SmoothFollow>();
 			Debug.Log(smoothFollow);
 			smoothFollow.target = player.transform;
+			
+			player.transform.LookAt(new Vector3(0,0,0));
 		}
 		else
 		{
@@ -223,12 +227,13 @@ public class GameManager : MonoBehaviour {
 		funstyle.fontSize = 32;
 		funstyle.normal.textColor = Color.white;
 		
-
 		if (timeleft <= 0) {
             if(IsLowestID()) {
                 Debug.Log("Time's up");
                 var msg = new SFSObject();
                 msg.PutUtfString("type", "roundOver");
+				CalculateScore(true);
+				CalculateScore(false);
                 smartFox.Send(new ObjectMessageRequest(msg, null, smartFox.LastJoinedRoom.UserList));
             }
             roundStarted = false;
@@ -263,6 +268,8 @@ public class GameManager : MonoBehaviour {
 			lockBlock(msg);
 		if(msg.GetUtfString("type") == "unlock")
 			unlockBlock(msg);
+		if(msg.GetUtfString("type") == "iWon")
+			RoundCleanUp();
 		if(msg.GetUtfString("type") == "roundOver")
 			ShowResultsScreen();
 	}
@@ -290,6 +297,82 @@ public class GameManager : MonoBehaviour {
 
 			block.GetComponent<Rigidbody>().AddExplosionForce(force, targetPosition, 25.0f, 0.0f, ForceMode.Impulse);
 		}
+	}
+	
+	public void RoundCleanUp()
+	{
+		if (IsLowestID())
+		{
+			CalculateScore(true);
+			CalculateScore(false);
+			
+			ISFSObject roundOverObject = new SFSObject();
+			roundOverObject.PutUtfString("type", "roundOver");
+					
+			smartFox.Send(new ObjectMessageRequest(roundOverObject, null, smartFox.LastJoinedRoom.UserList));
+		}
+		
+		roundStarted = false;
+	}
+	
+	public void CalculateScore(bool isBlue)
+	{
+		if (!smartFox.LastJoinedRoom.GetVariable("countdownToggle").GetBoolValue())
+		{
+			float distanceAtDeath;
+			int farthestDistanceScore;
+			GameObject robot;
+			
+			if (isBlue)
+			{
+				robot = blueRobot;
+				if (robot == null)
+				{
+					robot = player;	
+				}
+				
+				Debug.Log("Blue");
+			}
+			else
+			{
+				robot = redRobot;
+				if (robot == null)
+				{
+					robot = player;	
+				}
+				Debug.Log("Red");
+			}
+			
+			List<RoomVariable> roomVars = new List<RoomVariable>();
+			
+			if (robot == blueRobot)
+			{
+				distanceAtDeath = robot.transform.position.x - (-112);
+				
+				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				
+				if (smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() < farthestDistanceScore)
+				{
+					roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
+				}
+			}
+			else
+			{
+				distanceAtDeath = 112 - robot.transform.position.x;
+				
+				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				
+				if (smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() < farthestDistanceScore)
+				{
+					roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
+				}
+			}
+			
+			if (roomVars.Count > 0)
+			{
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}	
 	}
 	
 	private void syncBlocks(ISFSObject msg) {
@@ -325,15 +408,14 @@ public class GameManager : MonoBehaviour {
 		}
 		return myID == lowestUserID;
 	}
-
-    public void Deactivate() {
-        active = false;
-    }
 	
-	private void ShowResultsScreen() {
+	private void ShowResultsScreen()
+	{
         gameObject.AddComponent("ResultsScreen");
         var player = GameObject.FindWithTag("Player");
         if(player != null)
+		{
             player.active = false;
+		}
 	}
 }
