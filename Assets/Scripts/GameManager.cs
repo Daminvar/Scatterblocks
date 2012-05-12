@@ -229,11 +229,15 @@ public class GameManager : MonoBehaviour {
 		GUIStyle funstyle = new GUIStyle();
 		funstyle.fontSize = 32;
 		funstyle.normal.textColor = Color.white;
-		GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
 		
 		if (timeleft <= 0)
 		{
+			GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), "Time's up!", funstyle);
 			Debug.Log("Time's up");
+		}
+		else
+		{
+			GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
 		}
 	}
 	
