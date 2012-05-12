@@ -93,7 +93,7 @@ public class WaitScreenScript : MonoBehaviour {
 		DrawUsersGUI();
 		DrawChatGUI();
 		DrawButtons();
-		if(IsLowestID())
+		if(NetworkHelper.IsLowestID(smartFox))
 			DrawHostOptions();
 	}
 	
@@ -101,7 +101,6 @@ public class WaitScreenScript : MonoBehaviour {
 		smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnObjectMessage);
-		//smartFox.AddEventListener(SFSEvent.ROOM_JOIN, OnJoinRoom);
 	}
 	
 	void OnPublicMessage(BaseEvent evt) {
@@ -238,18 +237,5 @@ public class WaitScreenScript : MonoBehaviour {
 			smartFox.Send( new PublicMessageRequest(newMessage) );
 			newMessage = "";
 		}
-	}
-	
-	private bool IsLowestID()
-	{
-		int lowestUserID = Int32.MaxValue;
-		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
-		
-		foreach (User u in smartFox.LastJoinedRoom.UserList) {
-			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
-			if (userIDToCheck < lowestUserID)
-				lowestUserID = userIDToCheck;
-		}
-		return myID == lowestUserID;
 	}
 }

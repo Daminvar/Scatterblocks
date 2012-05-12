@@ -76,7 +76,7 @@ public class ResultsScreen : MonoBehaviour {
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
 		
-		if(IsLowestID()) {
+		if(NetworkHelper.IsLowestID(smartFox)) {
 			if(!_matchOver && GUILayout.Button("Next Round")) {
                 var toggle = new SFSRoomVariable("countdownToggle", null);
                 var otherVars = new List<RoomVariable>();
@@ -98,19 +98,5 @@ public class ResultsScreen : MonoBehaviour {
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 		GUILayout.EndArea();
-	}
-
-	//TODO: This should be refactored.
-	private bool IsLowestID()
-	{
-		int lowestUserID = int.MaxValue;
-		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
-		
-		foreach (User u in smartFox.LastJoinedRoom.UserList) {
-			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
-			if (userIDToCheck < lowestUserID)
-				lowestUserID = userIDToCheck;
-		}
-		return myID == lowestUserID;
 	}
 }

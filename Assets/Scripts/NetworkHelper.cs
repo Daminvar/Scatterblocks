@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Sfs2X;
+using Sfs2X.Entities;
 using Sfs2X.Entities.Data;
 
 public class NetworkHelper {
@@ -20,6 +22,18 @@ public class NetworkHelper {
 	
 	public static ISFSObject MakeSFSObject(string type, params dynamic[] args) {
 		return new SFSObject();
+	}
+
+	public static bool IsLowestID(SmartFox smartFox) {
+		int lowestUserID = int.MaxValue;
+		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
+		
+		foreach (User u in smartFox.LastJoinedRoom.UserList) {
+			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
+			if (userIDToCheck < lowestUserID)
+				lowestUserID = userIDToCheck;
+		}
+		return myID == lowestUserID;
 	}
 	
 	public static void SFSObjectToTransform(ISFSObject data, Transform trans) {

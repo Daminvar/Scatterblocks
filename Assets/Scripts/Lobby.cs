@@ -11,7 +11,6 @@ using Sfs2X.Entities.Data;
 using Sfs2X.Requests;
 using Sfs2X.Logging;
 
-
 public class Lobby : MonoBehaviour {
 
 	private SmartFox smartFox;
@@ -144,13 +143,12 @@ public class Lobby : MonoBehaviour {
 	
 	public void OnRoomCountChange(BaseEvent evt)
 	{
-		Room room = (Room)evt.Params["room"];
 		SetupRoomList();
 	}
 	
 	public void OnRoomCreationError(BaseEvent evt)
 	{
-		Debug.Log("Error creating room");
+		Debug.LogError("Error creating room");
 	}
 	
 	public void OnJoinRoom(BaseEvent evt)
@@ -181,10 +179,7 @@ public class Lobby : MonoBehaviour {
 	}
 
 	public void OnUserCountChange(BaseEvent evt) {
-		Room room = (Room)evt.Params["room"];
-		//if (room.IsGame ) {
-			SetupRoomList();
-		//}
+		SetupRoomList();
 	}
 	
 	void OnPublicMessage(BaseEvent evt) {
