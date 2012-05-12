@@ -227,8 +227,8 @@ public class GameManager : MonoBehaviour {
 		GUIStyle funstyle = new GUIStyle();
 		funstyle.fontSize = 32;
 		funstyle.normal.textColor = Color.white;
-		GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
 		
+
 		if (timeleft <= 0) {
             if(IsLowestID()) {
                 Debug.Log("Time's up");
@@ -237,6 +237,10 @@ public class GameManager : MonoBehaviour {
                 smartFox.Send(new ObjectMessageRequest(msg, null, smartFox.LastJoinedRoom.UserList));
             }
             roundStarted = false;
+		}
+		else
+		{
+			GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
 		}
 	}
 	

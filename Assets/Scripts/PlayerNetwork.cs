@@ -70,8 +70,6 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void Die()
 	{
-		Debug.Log("AAAAAARRRRRRGH!");
-		
 		if (!smartFox.LastJoinedRoom.GetVariable("countdownToggle").GetBoolValue())
 		{
 			float distanceAtDeath;
@@ -149,10 +147,10 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			if (hit.collider.gameObject.tag == "BlueGoal" && transform.position.y >= 26.9)
 			{
-				farthestDistance = 224;
+				farthestDistance = Int32.MaxValue;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
-				roomVars.Add(new SFSRoomVariable("blueStored", 500));
+				roomVars.Add(new SFSRoomVariable("blueStored", 550));
 				
 				ISFSObject sendRoundOverObject = new SFSObject();
 				sendRoundOverObject.PutUtfString("type", "roundOver");
@@ -165,10 +163,10 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			if (hit.collider.gameObject.tag == "RedGoal" && transform.position.y >= 26.9)
 			{
-				farthestDistance = 224;
+				farthestDistance = Int32.MaxValue;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
-				roomVars.Add(new SFSRoomVariable("redStored", 500));
+				roomVars.Add(new SFSRoomVariable("redStored", 550));
 				
 				ISFSObject sendRoundOverObject = new SFSObject();
 				sendRoundOverObject.PutUtfString("type", "roundOver");

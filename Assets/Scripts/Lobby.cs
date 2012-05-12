@@ -265,8 +265,8 @@ public class Lobby : MonoBehaviour {
 	}
 		
 	private void DrawUsersGUI(){
-		GUI.Box (new Rect (screenW - 200, 80, 180, 170), "Users");
-		GUILayout.BeginArea (new Rect (screenW - 190, 110, 150, 160));
+		GUI.Box (new Rect (screenW - 250, 80, 230, 170), "Users");
+		GUILayout.BeginArea (new Rect (screenW - 230, 110, 150, 160));
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
 			
@@ -281,10 +281,10 @@ public class Lobby : MonoBehaviour {
 	
 	private void DrawRoomsGUI(){
 		roomSelection = -1;
-		GUI.Box (new Rect (screenW - 200, 260, 180, 130), "Room List");
-		GUILayout.BeginArea (new Rect (screenW - 190, 290, 180, 150));
+		GUI.Box (new Rect (screenW - 250, 260, 230, 130), "Room List");
+		GUILayout.BeginArea (new Rect (screenW - 230, 290, 210, 150));
 			if (smartFox.RoomList.Count >= 1) {		
-				roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (180), GUILayout.Height (130));
+				roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (190), GUILayout.Height (130));
 					roomSelection = GUILayout.SelectionGrid (roomSelection, roomFullStrings, 1);
 					
 					if (roomSelection >= 0 && roomNameStrings[roomSelection] != smartFox.LastJoinedRoom.Name) {
@@ -298,7 +298,7 @@ public class Lobby : MonoBehaviour {
 			
 			// Game Room button
 			if (smartFox.LastJoinedRoom.Name == "The Lobby"){
-				if (GUI.Button (new Rect (80, 110, 85, 24), "Make Game")) {		
+				if (GUI.Button (new Rect (60, 110, 85, 24), "Make Game")) {		
 					// ****** Create new room ******* //
 					Debug.Log("new room "+username + "'s Room");
 					
