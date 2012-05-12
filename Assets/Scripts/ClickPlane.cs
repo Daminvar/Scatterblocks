@@ -25,6 +25,10 @@ public class ClickPlane : MonoBehaviour {
 	public Texture2D chargeBarEmpty;
 	public Texture2D chargeBarFull;
 	
+	public GameObject chargeHaloPF;
+	
+	private GameObject chargingHalo;
+	
 	// Use this for initialization
 	void Start () 
 	{
@@ -56,6 +60,10 @@ public class ClickPlane : MonoBehaviour {
 			explosionPos = hit.point;		
 			//Make object message.
 			//sendExplosionForce(pos, 100.0f);
+			
+			Vector3 chargePos = explosionPos;
+			chargePos.y += 0.1f;
+			chargingHalo = (Instantiate(chargeHaloPF, chargePos, Quaternion.identity) as GameObject);
 		}
 		if (Input.GetMouseButtonUp (0))
 		{
@@ -65,6 +73,8 @@ public class ClickPlane : MonoBehaviour {
 			{
 				totalCharge = 160.0f;	
 			}
+			
+			Destroy(chargingHalo);
 			
 			sendExplosionForce(explosionPos, totalCharge);
 			
@@ -85,6 +95,13 @@ public class ClickPlane : MonoBehaviour {
 		{
     		GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y, size.x, -size.y * Mathf.Clamp01(progress)), chargeBarFull, ScaleMode.StretchToFill);
 			GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y - size.y, size.x, size.y), chargeBarEmpty);
+			
+			float haloProgress = progress;
+			if (haloProgress > 1.0f)
+			{
+				haloProgress = 1.0f;	
+			}
+			chargingHalo.GetComponent<Light>().range = 40.0f * haloProgress;
 		}
 	}
 	

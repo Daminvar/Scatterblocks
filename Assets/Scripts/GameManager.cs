@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour {
 	public GameObject RobotPrefab;
 	public GameObject PlayerCamera;
 	public GameObject ExplosionPF;
+	public GameObject ExplosionLightPF;
 	public bool thirdPerson;
 	
 	private SmartFox smartFox;
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	
 	private bool roundStarted = false;
 	private float roundTime;
-	private const int ROUND_SECONDS = 15;
+	private const int ROUND_SECONDS = 150;
 	
 	private GameObject player;
 	
@@ -279,9 +280,18 @@ public class GameManager : MonoBehaviour {
 		
 		var newExplosion = Instantiate(ExplosionPF, targetPosition, Quaternion.identity);
 		
-		float totalTime = 2.0f * force/120.0f;
+		Vector3 lightPosition = targetPosition;
+		lightPosition.y += 10.0f;
 		
+		var explosionLight = Instantiate(ExplosionLightPF, lightPosition, Quaternion.identity);
+		
+		float totalTime = 2.0f * force/160.0f;
+
 		Destroy(newExplosion, totalTime);
+		
+		totalTime = totalTime/5.0f;
+		
+		Destroy(explosionLight, totalTime);
 		
 		GameObject[] blocksArray = GameObject.FindGameObjectsWithTag("Block");
 		foreach (GameObject block in blocksArray)
