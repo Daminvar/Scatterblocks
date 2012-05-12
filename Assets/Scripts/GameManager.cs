@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
 	
 	private bool roundStarted = false;
 	private float roundTime;
-	private const int ROUND_SECONDS = 30;
+	private const int ROUND_SECONDS = 15;
 	
 	private GameObject player;
 	
@@ -189,16 +189,13 @@ public class GameManager : MonoBehaviour {
 		else if (roundStarted)
 		{
 			DrawRoundTime();
+		
+            GUI.BeginGroup(new Rect(0, 200, 125, 100));
+            GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard");
+            GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]");
+            GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
+            GUI.EndGroup();
 		}
-		
-		GUI.BeginGroup(new Rect(0, 200, 125, 100));
-		
-		GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard");
-		
-		GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]");
-		GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
-		
-		GUI.EndGroup();
 	}
 	
 	private void DrawCountDown()
@@ -232,9 +229,14 @@ public class GameManager : MonoBehaviour {
 		funstyle.normal.textColor = Color.white;
 		GUI.Label(new Rect(Screen.width - 450, 50, 450, 70), timeleft + " seconds remaining...", funstyle);
 		
-		if (timeleft <= 0)
-		{
-			Debug.Log("Time's up");
+		if (timeleft <= 0) {
+            if(IsLowestID()) {
+                Debug.Log("Time's up");
+                var msg = new SFSObject();
+                msg.PutUtfString("type", "roundOver");
+                smartFox.Send(new ObjectMessageRequest(msg, null, smartFox.LastJoinedRoom.UserList));
+            }
+            roundStarted = false;
 		}
 	}
 	
@@ -331,9 +333,15 @@ public class GameManager : MonoBehaviour {
 		}
 		return myID == lowestUserID;
 	}
+
+    public void Deactivate() {
+        active = false;
+    }
 	
-	private void ShowResultsScreen()
-	{
-		
+	private void ShowResultsScreen() {
+        gameObject.AddComponent("ResultsScreen");
+        var player = GameObject.FindWithTag("Player");
+        if(player != null)
+            player.active = false;
 	}
 }
