@@ -13,8 +13,8 @@ public class ClickPlane : MonoBehaviour {
 	private SmartFox smartFox;
 	
 	private float startHold;
-	private const float MAX_TIME = 3.0f;
-	private const float CHARGE_MULTIPLIER = 40.0f;
+	private const float MAX_TIME = 2.0f;
+	private const float CHARGE_MULTIPLIER = 80.0f;
 	private Vector3 explosionPos;
 	private Vector2 size = new Vector2(20.0f, 40.0f);
 	private Vector3 mousePos;
@@ -61,9 +61,9 @@ public class ClickPlane : MonoBehaviour {
 		{
 			float totalCharge =  (Time.time - startHold) * CHARGE_MULTIPLIER;
 			
-			if (totalCharge > 120.0f)
+			if (totalCharge > 160.0f)
 			{
-				totalCharge = 120.0f;	
+				totalCharge = 160.0f;	
 			}
 			
 			sendExplosionForce(explosionPos, totalCharge);

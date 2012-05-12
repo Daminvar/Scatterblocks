@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
 	public GameObject Player;
 	public GameObject RobotPrefab;
 	public GameObject PlayerCamera;
+	public GameObject ExplosionPF;
 	public bool thirdPerson;
 	
 	private SmartFox smartFox;
@@ -269,6 +270,13 @@ public class GameManager : MonoBehaviour {
 		var force = msg.GetFloat("force");
 		var pos = msg.GetFloatArray("pos");
 		targetPosition = new Vector3(pos[0], Y_PLANE, pos[1]);
+		
+		var newExplosion = Instantiate(ExplosionPF, targetPosition, Quaternion.identity);
+		
+		float totalTime = 2.0f * force/120.0f;
+		
+		Destroy(newExplosion, totalTime);
+		
 		GameObject[] blocksArray = GameObject.FindGameObjectsWithTag("Block");
 		foreach (GameObject block in blocksArray)
 		{
