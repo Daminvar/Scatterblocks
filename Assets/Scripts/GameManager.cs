@@ -33,18 +33,17 @@ public class GameManager : MonoBehaviour {
 	
 	private bool countDownStarted = false;
 	private float countDownTime;
-	private const int COUNT_DOWN_SECONDS = 10;
+	private const int COUNT_DOWN_SECONDS = 5;
 	
 	private bool roundStarted = false;
 	private float roundTime;
-	private const int ROUND_SECONDS = 150;
+
+	private const int ROUND_SECONDS = 30;
 	
 	private GameObject player;
 	
 	private GameObject redRobot;
 	private GameObject blueRobot;
-	
-	private bool isHost = false;
 	
 	// Use this for initialization
 	void Start ()
@@ -61,10 +60,10 @@ public class GameManager : MonoBehaviour {
 		
 		if(thirdPerson)
 		{
-			
 			if(isBlueTeam) {
 				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
+				
 				redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
 				redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			} else {
@@ -73,10 +72,13 @@ public class GameManager : MonoBehaviour {
 				blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 				blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 			}
+			
 			var cam = Instantiate(PlayerCamera) as GameObject;
 			var smoothFollow = cam.GetComponent<SmoothFollow>();
 			Debug.Log(smoothFollow);
 			smoothFollow.target = player.transform;
+			
+			player.transform.LookAt(new Vector3(0,0,0));
 		}
 		else
 		{
@@ -89,7 +91,7 @@ public class GameManager : MonoBehaviour {
 		}
 		
 		
-		if(IsLowestID())
+		if(NetworkHelper.IsLowestID(smartFox))
 			InvokeRepeating("sendBlockData", BLOCK_SYNC_INTERVAL, BLOCK_SYNC_INTERVAL);
 		
 		
@@ -101,7 +103,7 @@ public class GameManager : MonoBehaviour {
 		{
 			Debug.Log("countdownchecker is null");
 			
-			if (IsLowestID())
+			if (NetworkHelper.IsLowestID(smartFox))
 			{
 				List<RoomVariable> roomVars = new List<RoomVariable>();
 				RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", true);
@@ -122,8 +124,8 @@ public class GameManager : MonoBehaviour {
 		smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		
-		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
-		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
+		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 	}
 	
 	private void OnRoomVariableUpdate( BaseEvent evt )
@@ -142,17 +144,15 @@ public class GameManager : MonoBehaviour {
 				else
 				{
 					smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
-					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 					Application.LoadLevel(Application.loadedLevel);
 				}
 			}
 		}
-	
 	}
 	
 	private void setCurrentTeam() {
 		ISFSArray reds = smartFox.LastJoinedRoom.GetVariable("red").GetSFSArrayValue();
-		ISFSArray blues = smartFox.LastJoinedRoom.GetVariable("blue").GetSFSArrayValue();
 		for(int i = 0; i < reds.Size(); i++) {
 			if(reds.GetUtfString(i) == smartFox.MySelf.Name) {
 				isBlueTeam = false;
@@ -165,9 +165,6 @@ public class GameManager : MonoBehaviour {
 	private bool isRobot() {
 		RoomVariable redbot = smartFox.LastJoinedRoom.GetVariable("redRobot");
 		RoomVariable bluebot = smartFox.LastJoinedRoom.GetVariable("blueRobot");
-		
-		Debug.Log(redbot);
-		Debug.Log(bluebot);
 		
 		if(redbot.GetStringValue() == smartFox.MySelf.Name)
 			return true;
@@ -190,13 +187,15 @@ public class GameManager : MonoBehaviour {
 		else if (roundStarted)
 		{
 			DrawRoundTime();
-		
+		}
+
+        if(countDownStarted || roundStarted) {
             GUI.BeginGroup(new Rect(0, 200, 125, 100));
             GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard");
             GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]");
             GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
             GUI.EndGroup();
-		}
+        }
 	}
 	
 	private void DrawCountDown()
@@ -210,7 +209,7 @@ public class GameManager : MonoBehaviour {
 		GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
 		GUILayout.EndArea();
 		
-		if (timeleft <= 0 && IsLowestID())
+		if (timeleft <= 0 && NetworkHelper.IsLowestID(smartFox))
 		{
 			List<RoomVariable> roomVars = new List<RoomVariable>();
 			RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", false);
@@ -229,12 +228,13 @@ public class GameManager : MonoBehaviour {
 		funstyle.fontSize = 32;
 		funstyle.normal.textColor = Color.white;
 		
-
 		if (timeleft <= 0) {
-            if(IsLowestID()) {
+            if(NetworkHelper.IsLowestID(smartFox)) {
                 Debug.Log("Time's up");
                 var msg = new SFSObject();
                 msg.PutUtfString("type", "roundOver");
+				CalculateScore(true);
+				CalculateScore(false);
                 smartFox.Send(new ObjectMessageRequest(msg, null, smartFox.LastJoinedRoom.UserList));
             }
             roundStarted = false;
@@ -259,7 +259,7 @@ public class GameManager : MonoBehaviour {
 		smartFox.Send (new ObjectMessageRequest(obj));
 	}
 	
-	private void OnMessage(BaseEvent evt) {
+	private void onMessage(BaseEvent evt) {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
 		if(msg.GetUtfString("type") == "explosion")
 			recieveExplosionForce(msg);
@@ -269,6 +269,8 @@ public class GameManager : MonoBehaviour {
 			lockBlock(msg);
 		if(msg.GetUtfString("type") == "unlock")
 			unlockBlock(msg);
+		if(msg.GetUtfString("type") == "iWon")
+			RoundCleanUp();
 		if(msg.GetUtfString("type") == "roundOver")
 			ShowResultsScreen();
 	}
@@ -314,6 +316,82 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
+	public void RoundCleanUp()
+	{
+		if (NetworkHelper.IsLowestID(smartFox))
+		{
+			CalculateScore(true);
+			CalculateScore(false);
+			
+			ISFSObject roundOverObject = new SFSObject();
+			roundOverObject.PutUtfString("type", "roundOver");
+					
+			smartFox.Send(new ObjectMessageRequest(roundOverObject, null, smartFox.LastJoinedRoom.UserList));
+		}
+		
+		roundStarted = false;
+	}
+	
+	public void CalculateScore(bool isBlue)
+	{
+		if (!smartFox.LastJoinedRoom.GetVariable("countdownToggle").GetBoolValue())
+		{
+			float distanceAtDeath;
+			int farthestDistanceScore;
+			GameObject robot;
+			
+			if (isBlue)
+			{
+				robot = blueRobot;
+				if (robot == null)
+				{
+					robot = player;	
+				}
+				
+				Debug.Log("Blue");
+			}
+			else
+			{
+				robot = redRobot;
+				if (robot == null)
+				{
+					robot = player;	
+				}
+				Debug.Log("Red");
+			}
+			
+			List<RoomVariable> roomVars = new List<RoomVariable>();
+			
+			if (robot == blueRobot)
+			{
+				distanceAtDeath = robot.transform.position.x - (-112);
+				
+				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				
+				if (smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() < farthestDistanceScore)
+				{
+					roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
+				}
+			}
+			else
+			{
+				distanceAtDeath = 112 - robot.transform.position.x;
+				
+				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				
+				if (smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() < farthestDistanceScore)
+				{
+					roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
+				}
+			}
+			
+			if (roomVars.Count > 0)
+			{
+				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
+			}
+		}	
+	}
+	
 	private void syncBlocks(ISFSObject msg) {
 		var networkBlocks = msg.GetSFSArray("blocks");
 		for(int i = 0; i < networkBlocks.Size (); i++) {
@@ -333,29 +411,13 @@ public class GameManager : MonoBehaviour {
 	{
 		_blocks[msg.GetInt("index")].rigidbody.isKinematic = false;
 	}
-	
-	//TODO: This should be refactored.
-	private bool IsLowestID()
-	{
-		int lowestUserID = Int32.MaxValue;
-		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
-		
-		foreach (User u in smartFox.LastJoinedRoom.UserList) {
-			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
-			if (userIDToCheck < lowestUserID)
-				lowestUserID = userIDToCheck;
-		}
-		return myID == lowestUserID;
-	}
 
-    public void Deactivate() {
-        active = false;
-    }
-	
 	private void ShowResultsScreen() {
         gameObject.AddComponent("ResultsScreen");
         var player = GameObject.FindWithTag("Player");
         if(player != null)
+		{
             player.active = false;
+		}
 	}
 }

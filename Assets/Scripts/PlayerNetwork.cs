@@ -70,6 +70,13 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void Die()
 	{
+		CalculateScore();
+		
+		this.transform.position = startingTransform;
+	}
+	
+	public void CalculateScore()
+	{
 		if (!smartFox.LastJoinedRoom.GetVariable("countdownToggle").GetBoolValue())
 		{
 			float distanceAtDeath;
@@ -103,15 +110,20 @@ public class PlayerNetwork : MonoBehaviour {
 			}
 			
 			smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
-		}
-		
-		this.transform.position = startingTransform;
+		}	
 	}
 	
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		if(hit.collider.gameObject.tag == "Block")
+		if (hit.collider.gameObject.tag == "Block")
 		{
+			if (hit.collider.gameObject.GetComponent<BlockScript>().isDangerous)
+			{
+				Die();
+				
+				return;
+			}
+			
 			List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
 			
 			int blockIndex;
@@ -152,10 +164,10 @@ public class PlayerNetwork : MonoBehaviour {
 				List<RoomVariable> roomVars = new List<RoomVariable>();
 				roomVars.Add(new SFSRoomVariable("blueStored", 550));
 				
-				ISFSObject sendRoundOverObject = new SFSObject();
-				sendRoundOverObject.PutUtfString("type", "roundOver");
+				ISFSObject roundOverObject = new SFSObject();
+				roundOverObject.PutUtfString("type", "iWon");
 					
-				smartFox.Send(new ObjectMessageRequest(sendRoundOverObject, null, smartFox.LastJoinedRoom.UserList));		
+				smartFox.Send(new ObjectMessageRequest(roundOverObject, null, smartFox.LastJoinedRoom.UserList));		
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
@@ -168,10 +180,10 @@ public class PlayerNetwork : MonoBehaviour {
 				List<RoomVariable> roomVars = new List<RoomVariable>();
 				roomVars.Add(new SFSRoomVariable("redStored", 550));
 				
-				ISFSObject sendRoundOverObject = new SFSObject();
-				sendRoundOverObject.PutUtfString("type", "roundOver");
+				ISFSObject roundOverObject = new SFSObject();
+				roundOverObject.PutUtfString("type", "iWon");
 					
-				smartFox.Send(new ObjectMessageRequest(sendRoundOverObject, null, smartFox.LastJoinedRoom.UserList));
+				smartFox.Send(new ObjectMessageRequest(roundOverObject, null, smartFox.LastJoinedRoom.UserList));
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
