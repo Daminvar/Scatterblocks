@@ -31,11 +31,11 @@ public class GameManager : MonoBehaviour {
 	
 	private bool countDownStarted = false;
 	private float countDownTime;
-	private const int COUNT_DOWN_SECONDS = 10;
+	private const int COUNT_DOWN_SECONDS = 5;
 	
 	private bool roundStarted = false;
 	private float roundTime;
-	private const int ROUND_SECONDS = 15;
+	private const int ROUND_SECONDS = 5;
 	
 	private GameObject player;
 	
@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour {
 		
 		if(thirdPerson)
 		{
-			
 			if(isBlueTeam) {
 				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
@@ -120,8 +119,8 @@ public class GameManager : MonoBehaviour {
 		smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		smartFox.AddEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
 		
-		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
-		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+		smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
+		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 	}
 	
 	private void OnRoomVariableUpdate( BaseEvent evt )
@@ -140,7 +139,7 @@ public class GameManager : MonoBehaviour {
 				else
 				{
 					smartFox.RemoveEventListener(SFSEvent.ROOM_VARIABLES_UPDATE, OnRoomVariableUpdate);
-					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, OnMessage);
+					smartFox.RemoveEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 					Application.LoadLevel(Application.loadedLevel);
 				}
 			}
@@ -163,9 +162,6 @@ public class GameManager : MonoBehaviour {
 	private bool isRobot() {
 		RoomVariable redbot = smartFox.LastJoinedRoom.GetVariable("redRobot");
 		RoomVariable bluebot = smartFox.LastJoinedRoom.GetVariable("blueRobot");
-		
-		Debug.Log(redbot);
-		Debug.Log(bluebot);
 		
 		if(redbot.GetStringValue() == smartFox.MySelf.Name)
 			return true;
@@ -257,7 +253,7 @@ public class GameManager : MonoBehaviour {
 		smartFox.Send (new ObjectMessageRequest(obj));
 	}
 	
-	private void OnMessage(BaseEvent evt) {
+	private void onMessage(BaseEvent evt) {
 		ISFSObject msg = (SFSObject)evt.Params["message"];
 		if(msg.GetUtfString("type") == "explosion")
 			recieveExplosionForce(msg);
