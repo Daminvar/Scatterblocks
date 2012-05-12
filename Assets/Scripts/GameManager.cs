@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour {
 		}
 		
 		
-		if(IsLowestID())
+		if(NetworkHelper.IsLowestID(smartFox))
 			InvokeRepeating("sendBlockData", BLOCK_SYNC_INTERVAL, BLOCK_SYNC_INTERVAL);
 		
 		
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour {
 		{
 			Debug.Log("countdownchecker is null");
 			
-			if (IsLowestID())
+			if (NetworkHelper.IsLowestID(smartFox))
 			{
 				List<RoomVariable> roomVars = new List<RoomVariable>();
 				RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", true);
@@ -146,12 +146,10 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
-	
 	}
 	
 	private void setCurrentTeam() {
 		ISFSArray reds = smartFox.LastJoinedRoom.GetVariable("red").GetSFSArrayValue();
-		ISFSArray blues = smartFox.LastJoinedRoom.GetVariable("blue").GetSFSArrayValue();
 		for(int i = 0; i < reds.Size(); i++) {
 			if(reds.GetUtfString(i) == smartFox.MySelf.Name) {
 				isBlueTeam = false;
@@ -208,7 +206,7 @@ public class GameManager : MonoBehaviour {
 		GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
 		GUILayout.EndArea();
 		
-		if (timeleft <= 0 && IsLowestID())
+		if (timeleft <= 0 && NetworkHelper.IsLowestID(smartFox))
 		{
 			List<RoomVariable> roomVars = new List<RoomVariable>();
 			RoomVariable countdownToggle = new SFSRoomVariable("countdownToggle", false);
@@ -228,7 +226,7 @@ public class GameManager : MonoBehaviour {
 		funstyle.normal.textColor = Color.white;
 		
 		if (timeleft <= 0) {
-            if(IsLowestID()) {
+            if(NetworkHelper.IsLowestID(smartFox)) {
                 Debug.Log("Time's up");
                 var msg = new SFSObject();
                 msg.PutUtfString("type", "roundOver");
@@ -301,7 +299,7 @@ public class GameManager : MonoBehaviour {
 	
 	public void RoundCleanUp()
 	{
-		if (IsLowestID())
+		if (NetworkHelper.IsLowestID(smartFox))
 		{
 			CalculateScore(true);
 			CalculateScore(false);
@@ -394,23 +392,8 @@ public class GameManager : MonoBehaviour {
 	{
 		_blocks[msg.GetInt("index")].rigidbody.isKinematic = false;
 	}
-	
-	//TODO: This should be refactored.
-	private bool IsLowestID()
-	{
-		int lowestUserID = Int32.MaxValue;
-		int myID = smartFox.MySelf.GetPlayerId(smartFox.LastJoinedRoom);
-		
-		foreach (User u in smartFox.LastJoinedRoom.UserList) {
-			int userIDToCheck = u.GetPlayerId(smartFox.LastJoinedRoom);
-			if (userIDToCheck < lowestUserID)
-				lowestUserID = userIDToCheck;
-		}
-		return myID == lowestUserID;
-	}
-	
-	private void ShowResultsScreen()
-	{
+
+	private void ShowResultsScreen() {
         gameObject.AddComponent("ResultsScreen");
         var player = GameObject.FindWithTag("Player");
         if(player != null)
