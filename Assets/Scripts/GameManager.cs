@@ -325,9 +325,15 @@ public class GameManager : MonoBehaviour {
 		}
 		return myID == lowestUserID;
 	}
+
+    public void Deactivate() {
+        active = false;
+    }
 	
 	private void ShowResultsScreen() {
         gameObject.AddComponent("ResultsScreen");
-        //todo: remove input handling scripts
+        var player = GameObject.FindWithTag("Player");
+        if(player != null)
+            player.active = false;
 	}
 }
