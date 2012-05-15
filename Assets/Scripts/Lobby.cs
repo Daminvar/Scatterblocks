@@ -223,8 +223,8 @@ public class Lobby : MonoBehaviour {
 	}
 	
 	private void DrawLoginGUI(){
-        GUILayout.BeginArea(new Rect(50, 50, 300, 400), "box");
-        GUILayout.BeginVertical();
+        GUILayout.BeginArea(new Rect(50, 50, 300, 400));
+        GUILayout.BeginVertical("box");
 
         GUILayout.BeginHorizontal();
 		GUILayout.Label("Username: ");
