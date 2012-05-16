@@ -14,8 +14,8 @@ using Sfs2X.Logging;
 public class Lobby : MonoBehaviour {
 
 	private SmartFox smartFox;
-	private string zone = "m113wjz";
-	private string serverName = "129.21.29.6";
+	private string zone = "m113dmh";
+	private string serverName = "129.21.116.173";
 	private int serverPort = 9933;
 	public string username = "";
 	private string loginErrorMessage = "";

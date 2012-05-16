@@ -175,6 +175,8 @@ private var tr : Transform;
 
 private var controller : CharacterController;
 
+private var jumpingReachedApex = false;
+
 function Awake () {
 	controller = GetComponent (CharacterController);
 	tr = transform;
@@ -292,6 +294,7 @@ private function UpdateFunction () {
 		jumping.jumping = false;
 		SubtractNewPlatformVelocity();
 		
+		SendMessage("DidLand", SendMessageOptions.DontRequireReceiver);
 		SendMessage("OnLand", SendMessageOptions.DontRequireReceiver);
 	}
 	
@@ -395,9 +398,11 @@ private function ApplyGravityAndJumping (velocity : Vector3) {
 	
 	if (inputJump && jumping.lastButtonDownTime < 0 && canControl)
 		jumping.lastButtonDownTime = Time.time;
-	
+		
 	if (grounded)
+	{
 		velocity.y = Mathf.Min(0, velocity.y) - movement.gravity * Time.deltaTime;
+	}
 	else {
 		velocity.y = movement.velocity.y - movement.gravity * Time.deltaTime;
 		
@@ -414,6 +419,17 @@ private function ApplyGravityAndJumping (velocity : Vector3) {
 		
 		// Make sure we don't fall any faster than maxFallSpeed. This gives our character a terminal velocity.
 		velocity.y = Mathf.Max (velocity.y, -movement.maxFallSpeed);
+		
+		
+		if (jumping.jumping && !jumpingReachedApex && velocity.y <= 0.0)
+		{
+			jumpingReachedApex = true;
+		}
+		else if ( velocity.y > 0.0 )
+		{
+			jumpingReachedApex = false;
+		}
+		
 	}
 		
 	if (grounded) {
@@ -560,6 +576,14 @@ function GetDirection () {
 
 function SetControllable (controllable : boolean) {
 	canControl = controllable;
+}
+
+function GetVelocity () {
+	return movement.velocity;
+}
+
+function ApexReached () {
+	return jumpingReachedApex;
 }
 
 // Project a direction onto elliptical quater segments based on forward, sideways, and backwards speed.
