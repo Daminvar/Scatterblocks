@@ -196,6 +196,8 @@ public class GameManager : MonoBehaviour {
             GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
             GUI.EndGroup();
         }
+        
+		GUI.Label(new Rect(10, 10, 300, 50), isBlueTeam ? "Blue Team" : "Red Team");
 	}
 	
 	private void DrawCountDown()

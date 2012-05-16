@@ -71,8 +71,16 @@ public class PlayerNetwork : MonoBehaviour {
 	void Die()
 	{
 		CalculateScore();
-		
+		if(lastCollision == null)
+			return;
+			
 		this.transform.position = startingTransform;
+		var unlockMessage = new SFSObject();
+		unlockMessage.PutUtfString("type", "unlock");
+		List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
+		int blockIndex = blockList.IndexOf(lastCollision);
+		unlockMessage.PutInt("index", blockIndex);
+		smartFox.Send(new ObjectMessageRequest(unlockMessage, null, smartFox.LastJoinedRoom.UserList));
 	}
 	
 	public void CalculateScore()
