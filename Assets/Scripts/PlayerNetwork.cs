@@ -31,7 +31,9 @@ public class PlayerNetwork : MonoBehaviour {
 			
 			GetComponent<NetworkTransformSender>().IsBlueTeam = value;
 			
-			if(!_isBlueTeam)
+			if(_isBlueTeam)
+				this.GetComponentInChildren<Renderer>().material.color = Color.blue;
+			else
 				this.GetComponentInChildren<Renderer>().material.color = Color.red;
 		}
 	}
@@ -66,9 +68,6 @@ public class PlayerNetwork : MonoBehaviour {
 	void Die()
 	{
 		CalculateScore();
-		if(lastCollision == null)
-			return;
-			
 		this.transform.position = startingTransform;
 		List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
 		int blockIndex = blockList.IndexOf(lastCollision);
