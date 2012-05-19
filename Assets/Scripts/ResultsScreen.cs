@@ -12,14 +12,38 @@ using Sfs2X.Logging;
 public class ResultsScreen : MonoBehaviour {
 	private SmartFox smartFox;
 	private bool _matchOver;
+	private bool isBlueTeam;
 	private string _roundString;
 	private string _redString;
 	private string _blueString;
 	private string _winnerString;
     private int _redPoints, _redTotal, _bluePoints, _blueTotal;
+	private GUIStyle resultsStyle;
+	private GUIStyle boxStyle;
+	private Color teamColor;
 
 	// Use this for initialization
 	void Start () {
+		isBlueTeam = gameObject.GetComponent<GameManager>().IsBlueTeam;
+		
+		resultsStyle = new GUIStyle();
+		resultsStyle.fontSize = 24;
+		
+		if (isBlueTeam)
+		{
+			//teamColor = new Color(68, 137, 223, 1.0f);
+			teamColor = new Color(0.27f, 0.54f, 0.87f, 1.0f);
+		}
+		else
+		{
+			//teamColor = new Color(226, 40, 32, 1.0f);
+			teamColor = new Color(0.87f, 0.16f, 0.13f, 1.0f);
+		}
+		
+		resultsStyle.normal.textColor = teamColor;
+		
+		Debug.Log(resultsStyle.normal.textColor);
+		
 		smartFox = SmartFoxConnection.Connection;
 		
 		_redPoints = smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue();
@@ -56,21 +80,18 @@ public class ResultsScreen : MonoBehaviour {
     }
 	
 	void OnGUI() {
-		var style = new GUIStyle();
-		style.fontSize = 24;
-		style.normal.textColor = Color.white;
-		
 		GUILayout.BeginArea(new Rect(50, 50, Screen.width - 100, Screen.height - 100));
 		GUILayout.BeginVertical("box");
-		GUILayout.Label("Results", style);
+		
+		GUILayout.Label("Results", resultsStyle);
 		GUILayout.Space(50);
 		
-		GUILayout.Label(_roundString, style);
-		GUILayout.Label(_redString, style);
-		GUILayout.Label(_blueString, style);
+		GUILayout.Label(_roundString, resultsStyle);
+		GUILayout.Label(_redString, resultsStyle);
+		GUILayout.Label(_blueString, resultsStyle);
 		GUILayout.FlexibleSpace();
 		if(_matchOver)
-			GUILayout.Label(_winnerString, style);
+			GUILayout.Label(_winnerString, resultsStyle);
 		GUILayout.EndVertical();
 
         GUILayout.BeginHorizontal();

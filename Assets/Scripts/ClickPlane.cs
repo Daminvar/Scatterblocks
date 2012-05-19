@@ -20,6 +20,7 @@ public class ClickPlane : MonoBehaviour {
 	private Vector3 mousePos;
 	
 	private bool isCharging = false;
+	private bool isBlueTeam;
 	private float progress = 0.0f;
 	
 	public Texture2D chargeBarEmpty;
@@ -34,7 +35,18 @@ public class ClickPlane : MonoBehaviour {
 	{
 		smartFox = SmartFoxConnection.Connection;
 		chargeBarEmpty = (Texture2D)Resources.Load("chargeBackground");
-		chargeBarFull = (Texture2D)Resources.Load("chargeFull");
+		//chargeBarFull = (Texture2D)Resources.Load("chargeFull");
+		
+		isBlueTeam = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>().IsBlueTeam;
+		
+		if (isBlueTeam)
+		{
+			chargeBarFull = (Texture2D)Resources.Load("ChargeFullBlue");	
+		}
+		else
+		{
+			chargeBarFull = (Texture2D)Resources.Load("ChargeFullRed");	
+		}
 	}
 	
 	// Update is called once per frame
@@ -93,7 +105,7 @@ public class ClickPlane : MonoBehaviour {
 	{
 		if (isCharging)
 		{
-    		GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y, size.x, -size.y * Mathf.Clamp01(progress)), chargeBarFull, ScaleMode.StretchToFill);
+			GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y, size.x, -size.y * Mathf.Clamp01(progress)), chargeBarFull, ScaleMode.StretchToFill);
 			GUI.DrawTexture(new Rect(mousePos.x, Screen.height - mousePos.y - size.y, size.x, size.y), chargeBarEmpty);
 			
 			float haloProgress = progress;
