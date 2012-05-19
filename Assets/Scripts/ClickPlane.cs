@@ -75,7 +75,17 @@ public class ClickPlane : MonoBehaviour {
 			
 			Vector3 chargePos = explosionPos;
 			chargePos.y += 0.1f;
+			
 			chargingHalo = (Instantiate(chargeHaloPF, chargePos, Quaternion.identity) as GameObject);
+			
+			if (isBlueTeam)
+			{
+				chargingHalo.GetComponent<Light>().color = Color.blue;	
+			}
+			else
+			{
+				chargingHalo.GetComponent<Light>().color = Color.red;	
+			}
 		}
 		if (Input.GetMouseButtonUp (0))
 		{
@@ -121,6 +131,14 @@ public class ClickPlane : MonoBehaviour {
 	{
 		ISFSObject sendExplosion = new SFSObject();
 		sendExplosion.PutUtfString("type", "explosion");
+		if (isBlueTeam)
+		{
+			sendExplosion.PutUtfString("team", "blue");	
+		}
+		else
+		{
+			sendExplosion.PutUtfString("team", "red");
+		}
 		sendExplosion.PutFloat("force", force);
 		sendExplosion.PutFloatArray("pos", new[] {location.x, location.z});
 		smartFox.Send(new ObjectMessageRequest(sendExplosion, null, smartFox.LastJoinedRoom.UserList));

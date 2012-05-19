@@ -311,14 +311,33 @@ public class GameManager : MonoBehaviour {
 	private void recieveExplosionForce(ISFSObject msg) {
 		var force = msg.GetFloat("force");
 		var pos = msg.GetFloatArray("pos");
+		var team = msg.GetUtfString("team");
 		targetPosition = new Vector3(pos[0], Y_PLANE, pos[1]);
 		
-		var newExplosion = Instantiate(ExplosionPF, targetPosition, Quaternion.identity);
+		GameObject newExplosion = Instantiate(ExplosionPF, targetPosition, Quaternion.identity) as GameObject;
+		
+		if (team == "blue")
+		{
+			newExplosion.GetComponent<ParticleSystem>().startColor = new Color(0.0f, 0.5f, 1.0f, 1.0f);	
+		}
+		else
+		{
+			newExplosion.GetComponent<ParticleSystem>().startColor = Color.red;	
+		}
 		
 		Vector3 lightPosition = targetPosition;
 		lightPosition.y += 10.0f;
 		
-		var explosionLight = Instantiate(ExplosionLightPF, lightPosition, Quaternion.identity);
+		GameObject explosionLight = Instantiate(ExplosionLightPF, lightPosition, Quaternion.identity) as GameObject;
+		
+		if (team == "blue")
+		{
+			explosionLight.GetComponent<Light>().color = Color.blue;
+		}
+		else
+		{
+			explosionLight.GetComponent<Light>().color = Color.red;
+		}
 		
 		float totalTime = 2.0f * force/160.0f;
 
