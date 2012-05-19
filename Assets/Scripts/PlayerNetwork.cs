@@ -50,6 +50,8 @@ public class PlayerNetwork : MonoBehaviour {
 		get { return farthestDistanceScore; }
 	}
 	
+	private GameObject plane;
+	
 	// Use this for initialization
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
@@ -57,6 +59,8 @@ public class PlayerNetwork : MonoBehaviour {
 		startingTransform = this.transform.position;
 		farthestDistance = 0;
 		farthestDistanceScore = 0;
+		
+		plane = GameObject.FindGameObjectWithTag("Plane");
 		
 		//Debug.Log(goalPlatform);
 	}
@@ -83,26 +87,26 @@ public class PlayerNetwork : MonoBehaviour {
 			
 			if (IsBlueTeam)
 			{
-				distanceAtDeath = transform.position.x - (-112);
+				distanceAtDeath = transform.position.x - (-plane.collider.bounds.extents.x);
 				
 				if (distanceAtDeath > farthestDistance)
 				{
 					farthestDistance = distanceAtDeath;
 			
-					farthestDistanceScore = (int)((farthestDistance / 224) * 500);
+					farthestDistanceScore = (int)((farthestDistance / plane.collider.bounds.size.x) * 500);
 				}
 				
 				roomVars.Add(new SFSRoomVariable("blueStored", farthestDistanceScore));
 			}
 			else
 			{
-				distanceAtDeath = 112 - transform.position.x;
+				distanceAtDeath = plane.collider.bounds.extents.x - transform.position.x;
 				
 				if (distanceAtDeath > farthestDistance)
 				{
 					farthestDistance = distanceAtDeath;
 			
-					farthestDistanceScore = (int)((farthestDistance / 224) * 500);
+					farthestDistanceScore = (int)((farthestDistance / plane.collider.bounds.size.x) * 500);
 				}
 				
 				roomVars.Add(new SFSRoomVariable("redStored", farthestDistanceScore));
