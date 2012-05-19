@@ -42,8 +42,6 @@ public class ResultsScreen : MonoBehaviour {
 		
 		resultsStyle.normal.textColor = teamColor;
 		
-		Debug.Log(resultsStyle.normal.textColor);
-		
 		smartFox = SmartFoxConnection.Connection;
 		
 		_redPoints = smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue();
