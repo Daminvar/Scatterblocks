@@ -61,11 +61,6 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		/*if (this.transform.position.y < 7.1f)
-		{
-			Die();	
-		}*/
 	}
 	
 	void Die()
@@ -123,21 +118,16 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		Debug.Log(hit.collider.gameObject.tag);
-		
-		if (hit.collider.gameObject.tag == "Plane")
-		{
+
+		if(hit.collider.CompareTag("Plane")) {
 			Die();
-			
 			return;
 		}
-		
 		if (hit.collider.gameObject.tag == "Block")
 		{
 			if (hit.collider.gameObject.GetComponent<BlockScript>().isDangerous)
 			{
 				Die();
-				
 				return;
 			}
 			
@@ -170,11 +160,13 @@ public class PlayerNetwork : MonoBehaviour {
 			lockBlock.PutUtfString("type", "lock");
 			
 			smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
-			
 		}
-		else if (IsBlueTeam)
+	}
+	
+	void OnTriggerEnter(Collider other) {
+		if (IsBlueTeam)
 		{
-			if (hit.collider.gameObject.tag == "BlueGoal" && transform.position.y >= 26.9)
+			if (other.gameObject.tag == "BlueGoal")
 			{
 				farthestDistance = Int32.MaxValue;
 				
@@ -190,7 +182,7 @@ public class PlayerNetwork : MonoBehaviour {
 		}
 		else
 		{
-			if (hit.collider.gameObject.tag == "RedGoal" && transform.position.y >= 26.9)
+			if (other.gameObject.tag == "RedGoal")
 			{
 				farthestDistance = Int32.MaxValue;
 				

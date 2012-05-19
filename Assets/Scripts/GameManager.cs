@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour {
 	private bool roundStarted = false;
 	private float roundTime;
 
-	private const int ROUND_SECONDS = 30;
+	private const int ROUND_SECONDS = 60;
 	
 	private GameObject player;
 	
@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour {
 	private GameObject blueRobot;
 	
 	public GUISkin skin;
+
+	private Texture2D infoTexture;
 	
 	// Use this for initialization
 	void Start ()
@@ -85,6 +87,7 @@ public class GameManager : MonoBehaviour {
 			smoothFollow.target = player.transform;
 			
 			player.transform.LookAt(new Vector3(0,0,0));
+			infoTexture = Resources.Load("jump-instructions") as Texture2D;
 		}
 		else
 		{
@@ -94,6 +97,8 @@ public class GameManager : MonoBehaviour {
 			blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
+			//TODO: This should be a different instructions image
+			infoTexture = Resources.Load("jump-instructions") as Texture2D;
 		}
 		
 		
@@ -232,8 +237,9 @@ public class GameManager : MonoBehaviour {
 		GUIStyle funstyle = new GUIStyle();
 		funstyle.fontSize = 50;
 		funstyle.normal.textColor = Color.white;
-		GUILayout.BeginArea(new Rect(Screen.width/2 - 160, 250, 450, 70));
-		GUILayout.Label("Starting in " + timeleft + "s...", funstyle);
+		GUILayout.BeginArea(new Rect(Screen.width/2 - 160, 100, Screen.width, Screen.height));
+		GUILayout.Label("Starting in " + timeleft + " seconds...", funstyle);
+		GUILayout.Label(infoTexture);
 		GUILayout.EndArea();
 		
 		if (timeleft <= 0 && NetworkHelper.IsLowestID(smartFox))
