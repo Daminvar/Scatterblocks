@@ -61,11 +61,6 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		if (this.transform.position.y < 7.1f)
-		{
-			Die();	
-		}
 	}
 	
 	void Die()
@@ -123,12 +118,15 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
+		if(hit.collider.CompareTag("Plane")) {
+			Die();
+			return;
+		}
 		if (hit.collider.gameObject.tag == "Block")
 		{
 			if (hit.collider.gameObject.GetComponent<BlockScript>().isDangerous)
 			{
 				Die();
-				
 				return;
 			}
 			

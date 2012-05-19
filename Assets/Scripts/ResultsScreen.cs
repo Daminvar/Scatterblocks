@@ -85,6 +85,8 @@ public class ResultsScreen : MonoBehaviour {
                 otherVars.Add(new SFSRoomVariable("redStored", 0));
                 otherVars.Add(new SFSRoomVariable("blueTotalScore", _blueTotal));
                 otherVars.Add(new SFSRoomVariable("blueStored", 0));
+                otherVars.Add(new SFSRoomVariable("redRobot", getRandomPlayer(false)));
+                otherVars.Add(new SFSRoomVariable("blueRobot", getRandomPlayer(true)));
                 //This needs to be done in two requests
                 smartFox.Send(new SetRoomVariablesRequest(new [] {toggle}));
                 smartFox.Send(new SetRoomVariablesRequest(otherVars));
@@ -98,5 +100,14 @@ public class ResultsScreen : MonoBehaviour {
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 		GUILayout.EndArea();
+	}
+	
+	private string getRandomPlayer(bool blue) {
+		ISFSArray players;
+		if(blue)
+			players = smartFox.LastJoinedRoom.GetVariable("blue").GetSFSArrayValue();
+		else
+			players = smartFox.LastJoinedRoom.GetVariable("red").GetSFSArrayValue();
+		return players.GetUtfString(new System.Random().Next(0, players.Size() - 1));
 	}
 }

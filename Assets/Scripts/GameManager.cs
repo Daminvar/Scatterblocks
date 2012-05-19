@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour {
 	private bool roundStarted = false;
 	private float roundTime;
 
-	private const int ROUND_SECONDS = 30;
+	private const int ROUND_SECONDS = 60;
 	
 	private GameObject player;
 	
