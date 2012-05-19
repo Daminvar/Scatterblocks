@@ -70,12 +70,9 @@ public class PlayerNetwork : MonoBehaviour {
 			return;
 			
 		this.transform.position = startingTransform;
-		var unlockMessage = new SFSObject();
-		unlockMessage.PutUtfString("type", "unlock");
 		List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
 		int blockIndex = blockList.IndexOf(lastCollision);
-		unlockMessage.PutInt("index", blockIndex);
-		smartFox.Send(new ObjectMessageRequest(unlockMessage, null, smartFox.LastJoinedRoom.UserList));
+		unlockBlock(blockIndex);
 	}
 	
 	public void CalculateScore()
@@ -139,13 +136,7 @@ public class PlayerNetwork : MonoBehaviour {
 			if (lastCollision != null && hit.collider.gameObject != lastCollision)
 			{
 				blockIndex = blockList.IndexOf(lastCollision);
-				
-				var unlockBlock = new SFSObject();
-			
-				unlockBlock.PutInt("index", blockIndex);
-				unlockBlock.PutUtfString("type", "unlock");
-			
-				smartFox.Send(new ObjectMessageRequest(unlockBlock, null, smartFox.LastJoinedRoom.UserList));
+				unlockBlock(blockIndex);
 			}
 			
 			//Lock new block.
@@ -168,6 +159,10 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			if (other.gameObject.tag == "BlueGoal")
 			{
+				List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
+				int blockIndex = blockList.IndexOf(lastCollision);
+				unlockBlock(blockIndex);
+				
 				farthestDistance = Int32.MaxValue;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
@@ -184,6 +179,10 @@ public class PlayerNetwork : MonoBehaviour {
 		{
 			if (other.gameObject.tag == "RedGoal")
 			{
+				List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
+				int blockIndex = blockList.IndexOf(lastCollision);
+				unlockBlock(blockIndex);
+				
 				farthestDistance = Int32.MaxValue;
 				
 				List<RoomVariable> roomVars = new List<RoomVariable>();
@@ -196,5 +195,16 @@ public class PlayerNetwork : MonoBehaviour {
 				smartFox.Send(new SetRoomVariablesRequest(roomVars, smartFox.LastJoinedRoom));
 			}
 		}
+	}
+	
+	private void unlockBlock(int index) {
+		if(index == -1)
+			return;
+		var unlockBlock = new SFSObject();
+	
+		unlockBlock.PutInt("index", index);
+		unlockBlock.PutUtfString("type", "unlock");
+	
+		smartFox.Send(new ObjectMessageRequest(unlockBlock, null, smartFox.LastJoinedRoom.UserList));
 	}
 }

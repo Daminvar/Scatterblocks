@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	
 	private bool countDownStarted = false;
 	private float countDownTime;
-	private const int COUNT_DOWN_SECONDS = 5;
+	private const int COUNT_DOWN_SECONDS = 8;
 	
 	private bool roundStarted = false;
 	private float roundTime;
