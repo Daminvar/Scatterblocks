@@ -15,6 +15,7 @@ public class ClickPlane : MonoBehaviour {
 	private float startHold;
 	private const float MAX_TIME = 2.0f;
 	private const float CHARGE_MULTIPLIER = 80.0f;
+	private const float CAMERA_SPEED = 5f;
 	private Vector3 explosionPos;
 	private Vector2 size = new Vector2(20.0f, 40.0f);
 	private Vector3 mousePos;
@@ -29,13 +30,14 @@ public class ClickPlane : MonoBehaviour {
 	public GameObject chargeHaloPF;
 	
 	private GameObject chargingHalo;
+	private GameObject plane;
 	
 	// Use this for initialization
 	void Start () 
 	{
 		smartFox = SmartFoxConnection.Connection;
 		chargeBarEmpty = (Texture2D)Resources.Load("chargeBackground");
-		//chargeBarFull = (Texture2D)Resources.Load("chargeFull");
+		plane = GameObject.FindGameObjectWithTag("Plane");
 		
 		isBlueTeam = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>().IsBlueTeam;
 		
@@ -52,11 +54,11 @@ public class ClickPlane : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
+		handleCameraMovement();
+		
 		RaycastHit hit;
 		if (Input.GetMouseButtonDown (0))
         {
-			//Debug.Log("Click");
-			
 			// Ensures the player clicked within the clickable region
 			if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit, 10000, 1 << 8))
 			{
@@ -70,8 +72,6 @@ public class ClickPlane : MonoBehaviour {
 			
       		//our target is where we clicked
 			explosionPos = hit.point;		
-			//Make object message.
-			//sendExplosionForce(pos, 100.0f);
 			
 			Vector3 chargePos = explosionPos;
 			chargePos.y += 0.1f;
@@ -97,11 +97,8 @@ public class ClickPlane : MonoBehaviour {
 			}
 			
 			Destroy(chargingHalo);
-			
 			sendExplosionForce(explosionPos, totalCharge);
-			
 			isCharging = false;
-			
 			Screen.showCursor = true;
 			
 		}
@@ -109,6 +106,28 @@ public class ClickPlane : MonoBehaviour {
 		{
 			progress = (Time.time - startHold)/MAX_TIME;
 		}
+	}
+	
+	private void handleCameraMovement() {
+		if(isCharging)
+			return;
+		
+		if(Input.GetKey(KeyCode.W)) {
+			transform.Translate(new Vector3(0, CAMERA_SPEED, 0));
+		}
+		if(Input.GetKey(KeyCode.A)) {
+			transform.Translate(new Vector3(-CAMERA_SPEED, 0, 0));
+		}
+		if(Input.GetKey(KeyCode.S)) {
+			transform.Translate(new Vector3(0, -CAMERA_SPEED, 0));
+		}
+		if(Input.GetKey(KeyCode.D)) {
+			transform.Translate(new Vector3(CAMERA_SPEED, 0, 0));
+		}
+		var bounds = plane.collider.bounds;
+		float x = Mathf.Clamp (transform.position.x, bounds.min.x, bounds.max.x);
+        float z = Mathf.Clamp (transform.position.z, bounds.min.z, bounds.max.z);
+        transform.position = new Vector3(x, transform.position.y, z);
 	}
 	
 	void OnGUI()
