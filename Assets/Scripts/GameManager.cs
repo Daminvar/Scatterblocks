@@ -97,8 +97,7 @@ public class GameManager : MonoBehaviour {
 			blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
-			//TODO: This should be a different instructions image
-			infoTexture = Resources.Load("jump-instructions") as Texture2D;
+			infoTexture = Resources.Load("rts-instructions") as Texture2D;
 		}
 		
 		
