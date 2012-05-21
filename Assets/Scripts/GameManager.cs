@@ -12,8 +12,8 @@ using Sfs2X.Requests;
 using Sfs2X.Logging;
 
 public class GameManager : MonoBehaviour {
-	public readonly Vector3 BLUE_START = new Vector3(-112, 27, 15);
-	public readonly Vector3 RED_START = new Vector3(112, 27, 15);
+	public Vector3 blueStart;
+	public Vector3 redStart;
 	public const float Y_PLANE = 3f;
 	public const float BLOCK_SYNC_INTERVAL = 0.5f;
 	
@@ -59,8 +59,8 @@ public class GameManager : MonoBehaviour {
 	void Start ()
 	{
 		smartFox = SmartFoxConnection.Connection;
-		
 		setCurrentTeam();
+		setStartPositions();
 		
 		plane = GameObject.FindGameObjectWithTag("Plane");
 				
@@ -73,15 +73,15 @@ public class GameManager : MonoBehaviour {
 		if(thirdPerson)
 		{
 			if(isBlueTeam) {
-				player = Instantiate(Player, BLUE_START, Quaternion.identity) as GameObject;
+				player = Instantiate(Player, blueStart, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = true;
 				
-				redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
+				redRobot = Instantiate(RobotPrefab, redStart, Quaternion.identity) as GameObject;
 				redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			} else {
-				player = Instantiate(Player, RED_START, Quaternion.identity) as GameObject;
+				player = Instantiate(Player, redStart, Quaternion.identity) as GameObject;
 				player.GetComponent<PlayerNetwork>().IsBlueTeam = false;
-				blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+				blueRobot = Instantiate(RobotPrefab, blueStart, Quaternion.identity) as GameObject;
 				blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 			}
 			
@@ -97,8 +97,8 @@ public class GameManager : MonoBehaviour {
 		{
 			var cam = Instantiate(RTSCamera, new Vector3(0, 200, 0), Quaternion.identity) as GameObject;
 			cam.transform.LookAt(new Vector3(0, 0, 0));
-			redRobot = Instantiate(RobotPrefab, RED_START, Quaternion.identity) as GameObject;
-			blueRobot = Instantiate(RobotPrefab, BLUE_START, Quaternion.identity) as GameObject;
+			redRobot = Instantiate(RobotPrefab, redStart, Quaternion.identity) as GameObject;
+			blueRobot = Instantiate(RobotPrefab, blueStart, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;
 			blueRobot.GetComponent<Robot>().IsBlueTeam = true;
 			infoTexture = Resources.Load("rts-instructions") as Texture2D;
@@ -163,6 +163,12 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
+	}
+	
+	private void setStartPositions() {
+		//Red's start is blue's goal and vice versa.
+		redStart = GameObject.FindGameObjectWithTag("BlueGoal").transform.position;
+		blueStart = GameObject.FindGameObjectWithTag("RedGoal").transform.position;
 	}
 	
 	private void setCurrentTeam() {
