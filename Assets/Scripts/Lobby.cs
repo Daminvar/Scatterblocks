@@ -33,7 +33,7 @@ public class Lobby : MonoBehaviour {
 	private string[] roomNameStrings; //Names of rooms
 	private string[] roomFullStrings; //Names and descriptions
 	private int screenW;
-
+	private Texture2D background;
 	
 	void Start()
 	{
@@ -59,6 +59,8 @@ public class Lobby : MonoBehaviour {
 		smartFox.AddLogListener(LogLevel.ERROR, OnDebugMessage);
 		smartFox.AddLogListener(LogLevel.WARN, OnDebugMessage);
 		screenW = Screen.width;
+		
+		background = Resources.Load("UnfinishedTitle") as Texture2D;
 	}
 	
 	private void AddEventListeners() {
@@ -223,7 +225,9 @@ public class Lobby : MonoBehaviour {
 	}
 	
 	private void DrawLoginGUI(){
-        GUILayout.BeginArea(new Rect(50, 50, 300, 400));
+		GUI.Label(new Rect(0, 0, Screen.width, Screen.height), background);
+		
+        GUILayout.BeginArea(new Rect(350, 375, 300, 400));
         GUILayout.BeginVertical("box");
 
         GUILayout.BeginHorizontal();

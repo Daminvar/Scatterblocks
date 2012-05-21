@@ -14,7 +14,7 @@ using Sfs2X.Logging;
 public class GameManager : MonoBehaviour {
 	public readonly Vector3 BLUE_START = new Vector3(-112, 27, 15);
 	public readonly Vector3 RED_START = new Vector3(112, 27, 15);
-	public const float Y_PLANE = 3f;
+	public const float Y_PLANE = 5f;
 	public const float BLOCK_SYNC_INTERVAL = 0.5f;
 	
 	public GameObject RTSCamera;
