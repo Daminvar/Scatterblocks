@@ -446,6 +446,7 @@ public class GameManager : MonoBehaviour {
 	private void syncBlocks(ISFSObject msg) {
 		var networkBlocks = msg.GetSFSArray("blocks");
 		for(int i = 0; i < networkBlocks.Size (); i++) {
+			Debug.Log(_blocks[i].name);
 			float[] coordinates = networkBlocks.GetSFSObject(i).GetFloatArray("position");
 			float[] velocityComponents = networkBlocks.GetSFSObject(i).GetFloatArray("velocity");
 			_blocks[i].transform.position = new Vector3(coordinates[0], _blocks[i].transform.position.y, coordinates[1]);
