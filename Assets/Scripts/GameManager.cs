@@ -14,7 +14,7 @@ using Sfs2X.Logging;
 public class GameManager : MonoBehaviour {
 	public readonly Vector3 BLUE_START = new Vector3(-112, 27, 15);
 	public readonly Vector3 RED_START = new Vector3(112, 27, 15);
-	public const float Y_PLANE = 5f;
+	public const float Y_PLANE = 3f;
 	public const float BLOCK_SYNC_INTERVAL = 0.5f;
 	
 	public GameObject RTSCamera;
@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour {
 	private GameObject redRobot;
 	private GameObject blueRobot;
 	
+	private GameObject plane;
+	
 	public GUISkin skin;
 
 	private Texture2D infoTexture;
@@ -59,6 +61,8 @@ public class GameManager : MonoBehaviour {
 		smartFox = SmartFoxConnection.Connection;
 		
 		setCurrentTeam();
+		
+		plane = GameObject.FindGameObjectWithTag("Plane");
 				
 		targetPosition = new Vector3(0,0,0);	
 		_blocks = GameObject.FindGameObjectsWithTag("Block");
@@ -415,9 +419,9 @@ public class GameManager : MonoBehaviour {
 			
 			if (robot == blueRobot)
 			{
-				distanceAtDeath = robot.transform.position.x - (-112);
+				distanceAtDeath = robot.transform.position.x - (-plane.collider.bounds.extents.x);
 				
-				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				farthestDistanceScore = (int)((distanceAtDeath / plane.collider.bounds.size.x) * 500);
 				
 				if (smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() < farthestDistanceScore)
 				{
@@ -426,9 +430,9 @@ public class GameManager : MonoBehaviour {
 			}
 			else
 			{
-				distanceAtDeath = 112 - robot.transform.position.x;
+				distanceAtDeath = plane.collider.bounds.extents.x - robot.transform.position.x;
 				
-				farthestDistanceScore = (int)((distanceAtDeath / 224) * 500);
+				farthestDistanceScore = (int)((distanceAtDeath / plane.collider.bounds.size.x) * 500);
 				
 				if (smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() < farthestDistanceScore)
 				{
