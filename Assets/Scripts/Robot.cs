@@ -34,9 +34,13 @@ public class Robot : MonoBehaviour {
 	private float mostRecentTime;
 	
 	private bool firstUpdate;
+	private bool wasJumpingUp = false;
+	
+	private bool jumpFlag = false;
 	
 	void Start () {
 		firstUpdate = true;
+		distanceDelta = Vector3.zero;
 		smartFox = SmartFoxConnection.Connection;
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
 
@@ -58,6 +62,56 @@ public class Robot : MonoBehaviour {
 		transform.position = (new Vector3(transform.position.x + deltaX, transform.position.y + deltaY, transform.position.z + deltaZ));//distanceDelta/(mostRecentTime - prevTime);
 		
 		transform.Rotate(rotDelta);
+	}
+	
+	
+	public Vector3 GetVelocity()
+	{
+		return distanceDelta;	
+	}
+	
+	public Vector3 GetAngle()
+	{
+		return transform.localEulerAngles;
+		
+	}
+	
+	public bool IsJumping()
+	{
+		if (distanceDelta.y > 1.0f)
+		{
+			jumpFlag = true;	
+		}
+		
+		if ( Math.Abs(distanceDelta.y) > 1.0f)
+		{
+			if (distanceDelta.y > 0.0f)
+			{
+				wasJumpingUp = true;	
+			}
+			else
+			{
+				wasJumpingUp = false;	
+			}
+			return true;	
+		}
+		else
+		{
+			if (wasJumpingUp)
+			{
+				return true;	
+			}
+			else
+			{
+				if (jumpFlag)
+				{
+					SendMessage("DidLand", SendMessageOptions.DontRequireReceiver);
+					jumpFlag = false;
+				}
+				return false;	
+			}
+				
+		}
 	}
 	
 	private void onMessage(BaseEvent evt) {
