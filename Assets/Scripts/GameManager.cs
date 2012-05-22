@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Sfs2X;
 using Sfs2X.Core;
@@ -105,8 +106,9 @@ public class GameManager : MonoBehaviour {
 		}
 		
 		
-		if(NetworkHelper.IsLowestID(smartFox))
+		if(NetworkHelper.IsLowestID(smartFox)) {
 			InvokeRepeating("sendBlockData", BLOCK_SYNC_INTERVAL, BLOCK_SYNC_INTERVAL);
+		}
 		
 		
 		ResetEventListeners();
@@ -288,13 +290,29 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	private void sendBlockData() {
+		var worker = new BackgroundWorker();
+		worker.DoWork += sendBlockDataSFSMessage;
+		var blocksData = new List<float[]>();
+		
+		foreach(GameObject block in _blocks) {
+			blocksData.Add(new [] {block.transform.position.x,
+				block.transform.position.z,
+				block.rigidbody.velocity.x,
+				block.rigidbody.velocity.z});
+		}
+		
+		worker.RunWorkerAsync(blocksData);
+	}
+	
+	private void sendBlockDataSFSMessage(object sender, DoWorkEventArgs e) {
+		var blocks = e.Argument as List<float[]>;
 		var obj = new SFSObject();
 		obj.PutUtfString("type", "sync");
 		var blocksArray = new SFSArray();
-		foreach (GameObject block in _blocks) {
+		foreach (var block in blocks) {
 			var blockData = new SFSObject();
-			blockData.PutFloatArray("position", new[] {block.transform.position.x, block.transform.position.z});
-            blockData.PutFloatArray("velocity", new[] {block.rigidbody.velocity.x, block.rigidbody.velocity.z});
+			blockData.PutFloatArray("position", new[] {block[0], block[1]});
+			blockData.PutFloatArray("velocity", new[] {block[2], block[3]});
 			blocksArray.AddSFSObject(blockData);
 		}
 		obj.PutSFSArray("blocks", blocksArray);
