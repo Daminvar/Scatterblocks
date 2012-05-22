@@ -37,13 +37,13 @@ public class Robot : MonoBehaviour {
 	private bool wasJumpingUp = false;
 	
 	private bool jumpFlag = false;
+	private bool finished = false;
 	
 	void Start () {
 		firstUpdate = true;
 		distanceDelta = Vector3.zero;
 		smartFox = SmartFoxConnection.Connection;
 		smartFox.AddEventListener(SFSEvent.OBJECT_MESSAGE, onMessage);
-
 	}
 	
 	void OnDestroy() {
@@ -52,6 +52,8 @@ public class Robot : MonoBehaviour {
 	
 	void FixedUpdate()
 	{
+		if(finished)
+			return;
 		// Interpolate the time-step based on current velocity
 		float deltaX = Time.deltaTime * distanceDelta.x;
 		float deltaY = Time.deltaTime * distanceDelta.y;
@@ -122,6 +124,8 @@ public class Robot : MonoBehaviour {
 			updateInterpolationData(msg);
 			updateRobotPosition(msg);
 		}
+		if(msg.GetUtfString("type") == "roundOver")
+			finished = true;
 	}
 	
 	private void updateInterpolationData(ISFSObject obj) {
