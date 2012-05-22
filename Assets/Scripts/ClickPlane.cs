@@ -49,6 +49,7 @@ public class ClickPlane : MonoBehaviour {
 		{
 			chargeBarFull = (Texture2D)Resources.Load("ChargeFullRed");	
 		}
+		explosionPos = Vector3.one;
 	}
 	
 	// Update is called once per frame
@@ -87,7 +88,7 @@ public class ClickPlane : MonoBehaviour {
 				chargingHalo.GetComponent<Light>().color = Color.red;	
 			}
 		}
-		if (Input.GetMouseButtonUp (0))
+		if (Input.GetMouseButtonUp (0) && explosionPos != Vector3.one)
 		{
 			float totalCharge =  (Time.time - startHold) * CHARGE_MULTIPLIER;
 			
@@ -100,6 +101,7 @@ public class ClickPlane : MonoBehaviour {
 			sendExplosionForce(explosionPos, totalCharge);
 			isCharging = false;
 			Screen.showCursor = true;
+			explosionPos = Vector3.one;
 			
 		}
 		if (isCharging)
