@@ -136,24 +136,24 @@ public class PlayerNetwork : MonoBehaviour {
 			int blockIndex;
 			
 			//Unlock old block, if any.
-			if (lastCollision != null && hit.collider.gameObject != lastCollision)
-			{
-				blockIndex = blockList.IndexOf(lastCollision);
-				unlockBlock(blockIndex);
-			}
+			if (hit.collider.gameObject != lastCollision) {
+				if (lastCollision != null) {
+					blockIndex = blockList.IndexOf(lastCollision);
+					unlockBlock(blockIndex);
+				}
 			
-			//Lock new block.
-			
-			blockIndex = blockList.IndexOf(hit.collider.gameObject);
+				//Lock new block.
+				blockIndex = blockList.IndexOf(hit.collider.gameObject);
+					
+				lastCollision = blockList[blockIndex];
 				
-			lastCollision = blockList[blockIndex];
-			
-			var lockBlock = new SFSObject();
-			
-			lockBlock.PutInt("index", blockIndex);
-			lockBlock.PutUtfString("type", "lock");
-			
-			smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
+				var lockBlock = new SFSObject();
+				
+				lockBlock.PutInt("index", blockIndex);
+				lockBlock.PutUtfString("type", "lock");
+				
+				smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
+			}
 		}
 	}
 	
