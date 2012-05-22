@@ -119,11 +119,14 @@ public class PlayerNetwork : MonoBehaviour {
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
 
+		if (hit.collider.gameObject == lastCollision)
+			return;
+		
 		if(hit.collider.CompareTag("Plane")) {
 			Die();
 			return;
 		}
-		if (hit.collider.gameObject.tag == "Block")
+		else if (hit.collider.gameObject.tag == "Block")
 		{
 			if (hit.collider.gameObject.GetComponent<BlockScript>().isDangerous)
 			{
@@ -135,25 +138,22 @@ public class PlayerNetwork : MonoBehaviour {
 			
 			int blockIndex;
 			
-			//Unlock old block, if any.
-			if (hit.collider.gameObject != lastCollision) {
-				if (lastCollision != null) {
-					blockIndex = blockList.IndexOf(lastCollision);
-					unlockBlock(blockIndex);
-				}
-			
-				//Lock new block.
-				blockIndex = blockList.IndexOf(hit.collider.gameObject);
-					
-				lastCollision = blockList[blockIndex];
-				
-				var lockBlock = new SFSObject();
-				
-				lockBlock.PutInt("index", blockIndex);
-				lockBlock.PutUtfString("type", "lock");
-				
-				smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
+			if (lastCollision != null) {
+				blockIndex = blockList.IndexOf(lastCollision);
+				unlockBlock(blockIndex);
 			}
+		
+			//Lock new block.
+			blockIndex = blockList.IndexOf(hit.collider.gameObject);
+				
+			lastCollision = blockList[blockIndex];
+			
+			var lockBlock = new SFSObject();
+			
+			lockBlock.PutInt("index", blockIndex);
+			lockBlock.PutUtfString("type", "lock");
+			
+			smartFox.Send(new ObjectMessageRequest(lockBlock, null, smartFox.LastJoinedRoom.UserList));
 		}
 	}
 	
