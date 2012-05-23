@@ -288,7 +288,14 @@ public class Lobby : MonoBehaviour {
 			
 				List<User> userList = smartFox.LastJoinedRoom.UserList;
 				foreach (User user in userList) {
-					GUILayout.Label (user.Name); 
+					if (user.IsItMe == true)
+					{
+						GUILayout.Label (user.Name + " (me)");
+					}
+					else
+					{
+						GUILayout.Label (user.Name); 
+					}
 				}
 			GUILayout.EndVertical ();
 			GUILayout.EndScrollView ();
@@ -316,7 +323,7 @@ public class Lobby : MonoBehaviour {
 			if (smartFox.LastJoinedRoom.Name == "The Lobby"){
 				if (GUI.Button (new Rect (60, 110, 85, 24), "Make Game")) {		
 					// ****** Create new room ******* //
-					Debug.Log("new room "+username + "'s Room");
+					Debug.Log("new room " + username + "'s Room");
 					
 					//let smartfox take care of error if duplicate name
 					RoomSettings settings = new RoomSettings(username + "'s Room");

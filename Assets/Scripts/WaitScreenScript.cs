@@ -16,7 +16,7 @@ public class WaitScreenScript : MonoBehaviour {
 	public int MIN_USERS = 3;
 	public int rounds = 3;
 	
-	private string _roundsString;
+	private int _roundsInt;
 
 	private string newMessage = "";
 	private ArrayList messages = new ArrayList();
@@ -31,7 +31,7 @@ public class WaitScreenScript : MonoBehaviour {
 		smartFox = SmartFoxConnection.Connection;
 		AddEventListeners();
 		
-		_roundsString = rounds.ToString();
+		_roundsInt = rounds;
 		
 		UpdateTeamLists();
 		
@@ -169,20 +169,35 @@ public class WaitScreenScript : MonoBehaviour {
 		
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Rounds: ");
-		_roundsString = GUILayout.TextField(_roundsString, 25, GUILayout.Width(70));
+		if (GUILayout.Button("<", GUILayout.Width(50)))
+		{
+			if (_roundsInt > 1)
+			{
+				_roundsInt--;
+			}
+		}
+		GUILayout.Box(_roundsInt.ToString());
+		if (GUILayout.Button(">", GUILayout.Width(50)))
+		{
+			if (_roundsInt < 20)
+			{
+				_roundsInt++;
+			}
+		}
 		GUILayout.EndHorizontal();
 		
-		int currentRounds = 0;
-		if (int.TryParse(_roundsString, out currentRounds)
-			&& redTeam.Count + blueTeam.Count >= MIN_USERS) {
-			if (GUILayout.Button ("Start Game")) {
+		if (redTeam.Count + blueTeam.Count >= MIN_USERS) 
+		{
+			if (GUILayout.Button ("Start Game")) 
+			{
 				ISFSObject sendJoinMessage = new SFSObject();
 				sendJoinMessage.PutUtfString("type", "everyoneJoin");
 				smartFox.Send(new ObjectMessageRequest(sendJoinMessage, null, smartFox.LastJoinedRoom.UserList));
-				var rounds = new SFSRoomVariable("rounds", currentRounds);
+				var rounds = new SFSRoomVariable("rounds", _roundsInt);
 				smartFox.Send(new SetRoomVariablesRequest(new [] { rounds }, smartFox.LastJoinedRoom));
 			}
 		}
+		
 		GUILayout.EndVertical();
 		GUILayout.EndArea();
 	}
@@ -193,8 +208,16 @@ public class WaitScreenScript : MonoBehaviour {
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
 			
-				foreach (string user in redTeam) {
-					GUILayout.Label (user); 
+				foreach (string user in redTeam)
+				{
+					if (smartFox.MySelf.Name == user)
+					{
+						GUILayout.Label(user + " (me)");
+					}
+					else
+					{
+						GUILayout.Label (user);
+					}
 				}
 		
 			GUILayout.EndVertical ();
@@ -206,8 +229,16 @@ public class WaitScreenScript : MonoBehaviour {
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
 			
-				foreach (string user in blueTeam) {
-					GUILayout.Label (user); 
+				foreach (string user in blueTeam) 
+				{
+					if (smartFox.MySelf.Name == user)
+					{
+						GUILayout.Label(user + " (me)");
+					}
+					else
+					{
+						GUILayout.Label (user);
+					} 
 				}
 		
 			GUILayout.EndVertical ();
