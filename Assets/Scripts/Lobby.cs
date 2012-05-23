@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 
 using Sfs2X;
 using Sfs2X.Core;
@@ -15,7 +16,7 @@ public class Lobby : MonoBehaviour {
 
 	private SmartFox smartFox;
 	private string zone = "m113dmh";
-	private string serverName = "129.21.116.173";
+	private string serverName = "ancelin.info";
 	private int serverPort = 9933;
 	public string username = "";
 	private string loginErrorMessage = "";
@@ -37,7 +38,7 @@ public class Lobby : MonoBehaviour {
 	
 	void Start()
 	{
-		Security.PrefetchSocketPolicy(serverName, serverPort); 
+		Security.PrefetchSocketPolicy(Dns.GetHostEntry(serverName).AddressList[0].ToString(), serverPort); 
 		bool debug = true;
 		if (SmartFoxConnection.IsInitialized)
 		{
@@ -253,7 +254,7 @@ public class Lobby : MonoBehaviour {
 		if (GUILayout.Button("Login", GUILayout.Width(100))  || (Event.current.type == EventType.keyDown && Event.current.character == '\n'))
 		{
 			AddEventListeners();
-			smartFox.Connect(serverName, serverPort);
+			smartFox.Connect(Dns.GetHostEntry(serverName).AddressList[0].ToString(), serverPort);
 		}
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
