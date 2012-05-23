@@ -376,8 +376,11 @@ public class Lobby : MonoBehaviour {
 		List<Room> allRooms = smartFox.RoomManager.GetRoomList();
 		
 		foreach (Room room in allRooms) {
-			rooms.Add(room.Name);
-			roomsFull.Add(room.Name + " (" + room.UserCount + "/" + room.MaxUsers + ")");	
+			if (room.Name != "The Lobby")
+			{
+				rooms.Add(room.Name);
+				roomsFull.Add(room.Name + " (" + room.UserCount + "/" + room.MaxUsers + ")");
+			}
 		}
 		
 		roomNameStrings = rooms.ToArray();
