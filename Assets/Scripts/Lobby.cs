@@ -310,7 +310,8 @@ public class Lobby : MonoBehaviour {
 				roomScrollPosition = GUILayout.BeginScrollView (roomScrollPosition, GUILayout.Width (190), GUILayout.Height (130));
 					roomSelection = GUILayout.SelectionGrid (roomSelection, roomFullStrings, 1);
 					
-					if (roomSelection >= 0 && roomNameStrings[roomSelection] != smartFox.LastJoinedRoom.Name) {
+					if (roomSelection >= 0 && roomNameStrings[roomSelection] != smartFox.LastJoinedRoom.Name)
+					{
 						smartFox.Send(new JoinRoomRequest(roomNameStrings[roomSelection]));
 					}
 				GUILayout.EndScrollView ();
@@ -376,7 +377,7 @@ public class Lobby : MonoBehaviour {
 		
 		foreach (Room room in allRooms) {
 			rooms.Add(room.Name);
-			roomsFull.Add(room.Name + " (" + room.UserCount + "/" + room.MaxUsers + ")");
+			roomsFull.Add(room.Name + " (" + room.UserCount + "/" + room.MaxUsers + ")");	
 		}
 		
 		roomNameStrings = rooms.ToArray();

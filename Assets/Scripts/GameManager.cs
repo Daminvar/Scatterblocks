@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour {
 		
 		plane = GameObject.FindGameObjectWithTag("Plane");
 				
-		targetPosition = new Vector3(0,0,0);	
+		targetPosition = Vector3.zero;
 		_blocks = GameObject.FindGameObjectsWithTag("Block");
 		
 		if(isRobot())
@@ -98,13 +98,13 @@ public class GameManager : MonoBehaviour {
 			Debug.Log(smoothFollow);
 			smoothFollow.target = player.transform;
 			
-			player.transform.LookAt(new Vector3(0,0,0));
+			player.transform.LookAt(Vector3.zero);
 			infoTexture = Resources.Load("jump-instructions") as Texture2D;
 		}
 		else
 		{
 			var cam = Instantiate(RTSCamera, new Vector3(0, 200, 0), Quaternion.identity) as GameObject;
-			cam.transform.LookAt(new Vector3(0, 0, 0));
+			cam.transform.LookAt(Vector3.zero);
 			redRobot = Instantiate(RobotPrefab, redStart, Quaternion.identity) as GameObject;
 			blueRobot = Instantiate(RobotPrefab, blueStart, Quaternion.identity) as GameObject;
 			redRobot.GetComponent<Robot>().IsBlueTeam = false;

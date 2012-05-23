@@ -25,10 +25,10 @@ public class ResultsScreen : MonoBehaviour {
 	private GUIStyle boxStyle;
 	private GUIStyle winnerStyle;
 	private Color teamColor;
-	
+
 	private float startTime;
 	private float lastUpdateTime;
-
+	
 	// Use this for initialization
 	void Start () {
 		isBlueTeam = gameObject.GetComponent<GameManager>().IsBlueTeam;

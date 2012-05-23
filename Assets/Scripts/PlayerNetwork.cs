@@ -12,6 +12,8 @@ using Sfs2X.Requests;
 using Sfs2X.Logging;
 
 public class PlayerNetwork : MonoBehaviour {
+	public GameObject ExplosionPrefab;
+	
 	private SmartFox smartFox;
 	
 	private Vector3 startingTransform;
@@ -51,6 +53,8 @@ public class PlayerNetwork : MonoBehaviour {
 	}
 	
 	private GameObject plane;
+	private bool _dead = false;
+	private Vector3 _positionOfDeath;
 	
 	// Use this for initialization
 	void Start () {
@@ -61,18 +65,35 @@ public class PlayerNetwork : MonoBehaviour {
 		farthestDistanceScore = 0;
 		
 		plane = GameObject.FindGameObjectWithTag("Plane");
-		
 		//Debug.Log(goalPlatform);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if(_dead) {
+			transform.position = _positionOfDeath;
+		}
+	}
+	
+	IEnumerator deathDelay() {
+		yield return new WaitForSeconds(2);
+		_dead = false;
+		GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
+		SendMessage("MakeIdle", SendMessageOptions.DontRequireReceiver);
+		transform.position = startingTransform;
 	}
 	
 	void Die()
 	{
 		CalculateScore();
-		this.transform.position = startingTransform;
+		
+		_dead = true;
+		GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+		_positionOfDeath = transform.position;
+		StartCoroutine(deathDelay());
+		var explosion = Instantiate(ExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
+		Destroy(explosion, 1.5f);
+		
 		List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
 		int blockIndex = blockList.IndexOf(lastCollision);
 		unlockBlock(blockIndex);
@@ -118,7 +139,9 @@ public class PlayerNetwork : MonoBehaviour {
 	
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-
+		if(_dead)
+			return;
+		
 		if (hit.collider.gameObject == lastCollision)
 			return;
 		

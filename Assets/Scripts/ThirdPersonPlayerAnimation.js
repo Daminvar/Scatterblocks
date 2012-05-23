@@ -151,4 +151,9 @@ function DidWallJump ()
 	animation.Play ("walljump");
 }
 
+function MakeIdle() {
+	animation.Stop();
+	animation.Play("idle");
+}
+
 @script AddComponentMenu ("Third Person Player/Third Person Player Animation")
