@@ -21,7 +21,9 @@ public class ResultsScreen : MonoBehaviour {
 	private GUIStyle resultsStyle;
 	private GUIStyle boxStyle;
 	private Color teamColor;
-
+	
+	public GUISkin skin;
+	
 	// Use this for initialization
 	void Start () {
 		isBlueTeam = gameObject.GetComponent<GameManager>().IsBlueTeam;

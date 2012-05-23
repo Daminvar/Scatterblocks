@@ -27,6 +27,8 @@ public class WaitScreenScript : MonoBehaviour {
 	private SmartFox smartFox;
 	private bool isBlueTeam = false;
 	
+	public GUISkin skin;
+	
 	void Start () {
 		smartFox = SmartFoxConnection.Connection;
 		AddEventListeners();
@@ -85,12 +87,15 @@ public class WaitScreenScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		
 	}
 	
 	void OnGUI() 
 	{
 		screenW = Screen.width;
+		GUI.skin = skin;
 		DrawUsersGUI();
+		GUI.skin = null;
 		DrawChatGUI();
 		DrawButtons();
 		if(NetworkHelper.IsLowestID(smartFox))
@@ -203,7 +208,7 @@ public class WaitScreenScript : MonoBehaviour {
 	}
 	
 	private void DrawUsersGUI(){
-		GUI.Box (new Rect (screenW - 200, 80, 180, 170), "Red Team");
+		GUI.Box (new Rect (screenW - 200, 80, 180, 170), "Red Team", "redWaitStyle");
 		GUILayout.BeginArea (new Rect (screenW - 190, 110, 150, 160));
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
@@ -224,7 +229,7 @@ public class WaitScreenScript : MonoBehaviour {
 			GUILayout.EndScrollView ();
 		GUILayout.EndArea ();
 		
-		GUI.Box (new Rect (screenW - 200, 280, 180, 170), "Blue Team");
+		GUI.Box (new Rect (screenW - 200, 280, 180, 170), "Blue Team", "blueWaitStyle");
 		GUILayout.BeginArea (new Rect (screenW - 190, 310, 150, 160));
 			userScrollPosition = GUILayout.BeginScrollView (userScrollPosition, GUILayout.Width (150), GUILayout.Height (150));
 			GUILayout.BeginVertical ();
@@ -233,11 +238,11 @@ public class WaitScreenScript : MonoBehaviour {
 				{
 					if (smartFox.MySelf.Name == user)
 					{
-						GUILayout.Label(user + " (me)");
+						GUILayout.Label(user + " (me)", "blueStyle");
 					}
 					else
 					{
-						GUILayout.Label (user);
+						GUILayout.Label (user, "blueStyle");
 					} 
 				}
 		
