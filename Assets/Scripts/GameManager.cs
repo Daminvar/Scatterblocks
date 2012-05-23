@@ -56,12 +56,19 @@ public class GameManager : MonoBehaviour {
 
 	private Texture2D infoTexture;
 	
+	private GUIStyle scoreboardStyle;
+	
 	// Use this for initialization
 	void Start ()
 	{
 		smartFox = SmartFoxConnection.Connection;
 		setCurrentTeam();
 		setStartPositions();
+		
+		scoreboardStyle = new GUIStyle();
+		scoreboardStyle.fontSize = 24;
+		scoreboardStyle.alignment = TextAnchor.MiddleCenter;
+		scoreboardStyle.normal.textColor = Color.white;
 		
 		plane = GameObject.FindGameObjectWithTag("Plane");
 				
@@ -213,32 +220,25 @@ public class GameManager : MonoBehaviour {
 			DrawRoundTime();
 		}
 		
+		
+		if(countDownStarted || roundStarted) 
+		{
+            GUI.BeginGroup(new Rect(0, 200, 175, 100));
+            GUI.Box(new Rect(0, 0, 175, 100), "Scoreboard", "ScoreboardBoxStyle");
+            GUI.Label(new Rect(15, 25, 150, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]", "blueBigFont");
+            GUI.Label(new Rect(15, 50, 150, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]", "redBigFont");
+            GUI.EndGroup();
+        }
+		
 		if (isBlueTeam)
 		{
-	        if(countDownStarted || roundStarted) 
-			{
-	            GUI.BeginGroup(new Rect(0, 200, 125, 100));
-	            GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard", "blueBoxStyle");
-	            GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]", "blueStyle");
-	            GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]", "blueStyle");
-	            GUI.EndGroup();
-	        }
-			
 			GUI.Label(new Rect(10, 10, 300, 50), "Blue Team", "blueBigFont");
 		}
 		else
 		{
-			if(countDownStarted || roundStarted) 
-			{
-	            GUI.BeginGroup(new Rect(0, 200, 125, 100));
-	            GUI.Box(new Rect(0, 0, 125, 100), "Scoreboard");
-	            GUI.Label(new Rect(15, 25, 100, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]");
-	            GUI.Label(new Rect(15, 50, 100, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]");
-	            GUI.EndGroup();
-	        }
-			
-			GUI.Label(new Rect(10, 10, 300, 50), "Red Team", "redBigFont");
+			GUI.Label(new Rect(10, 10, 300, 50), "Red Team", "redBigFont");	
 		}
+		
 	}
 	
 	private void DrawCountDown()

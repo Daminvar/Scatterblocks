@@ -18,8 +18,12 @@ public class ResultsScreen : MonoBehaviour {
 	private string _blueString;
 	private string _winnerString;
     private int _redPoints, _redTotal, _bluePoints, _blueTotal;
-	private GUIStyle resultsStyle;
+	private GUIStyle redResultsStyle;
+	private GUIStyle blueResultsStyle;
+	private GUIStyle titleStyle;
+	private GUIStyle roundStyle;
 	private GUIStyle boxStyle;
+	private GUIStyle winnerStyle;
 	private Color teamColor;
 	
 	private float startTime;
@@ -29,8 +33,19 @@ public class ResultsScreen : MonoBehaviour {
 	void Start () {
 		isBlueTeam = gameObject.GetComponent<GameManager>().IsBlueTeam;
 		
-		resultsStyle = new GUIStyle();
-		resultsStyle.fontSize = 24;
+		redResultsStyle = new GUIStyle();
+		redResultsStyle.fontSize = 24;
+		redResultsStyle.alignment = TextAnchor.MiddleCenter;
+		
+		titleStyle = new GUIStyle();
+		titleStyle.fontSize = 36;
+		titleStyle.alignment = TextAnchor.MiddleCenter;
+		titleStyle.normal.textColor = Color.white;
+		
+		roundStyle = new GUIStyle();
+		roundStyle.fontSize = 24;
+		roundStyle.alignment = TextAnchor.MiddleCenter;
+		roundStyle.normal.textColor = Color.white;
 		
 		if (isBlueTeam)
 		{
@@ -43,7 +58,17 @@ public class ResultsScreen : MonoBehaviour {
 			teamColor = new Color(0.87f, 0.16f, 0.13f, 1.0f);
 		}
 		
-		resultsStyle.normal.textColor = teamColor;
+		winnerStyle = new GUIStyle();
+		winnerStyle.fontSize = 36;
+		winnerStyle.alignment = TextAnchor.MiddleCenter;
+		winnerStyle.normal.textColor = teamColor;
+		
+		redResultsStyle.normal.textColor = Color.red;
+		
+		blueResultsStyle = new GUIStyle();
+		blueResultsStyle.fontSize = 24;
+		blueResultsStyle.alignment = TextAnchor.MiddleCenter;
+		blueResultsStyle.normal.textColor = Color.blue;
 		
 		smartFox = SmartFoxConnection.Connection;
 		
@@ -98,21 +123,21 @@ public class ResultsScreen : MonoBehaviour {
     }
 	
 	void OnGUI() {
-		GUILayout.BeginArea(new Rect(50, 50, Screen.width - 100, Screen.height - 100));
+		GUILayout.BeginArea(new Rect(400, 50, Screen.width - 600, Screen.height - 100));
 		GUILayout.BeginVertical("box");
 
-		GUILayout.Label("Results", resultsStyle);
-		GUILayout.Space(50);
+		GUILayout.Label("Results", titleStyle);
+		GUILayout.Space(20);
 		
-		_redString = string.Format("Red Team: {0} points ({1} points this round)", _redTotal, _redPoints);
-		_blueString = string.Format("Blue Team: {0} points ({1} points this round)", _blueTotal, _bluePoints);
+		_redString = string.Format("\nRed Team\n{0} points ({1} points this round)", _redTotal, _redPoints);
+		_blueString = string.Format("\nBlue Team\n{0} points ({1} points this round)", _blueTotal, _bluePoints);
 		
-		GUILayout.Label(_roundString, resultsStyle);
-		GUILayout.Label(_redString, resultsStyle);
-		GUILayout.Label(_blueString, resultsStyle);
+		GUILayout.Label(_roundString, roundStyle);
+		GUILayout.Label(_redString, redResultsStyle);
+		GUILayout.Label(_blueString, blueResultsStyle);
 		GUILayout.FlexibleSpace();
 		if(_matchOver)
-			GUILayout.Label(_winnerString, resultsStyle);
+			GUILayout.Label(_winnerString, winnerStyle);
 		GUILayout.EndVertical();
 
         GUILayout.BeginHorizontal();
