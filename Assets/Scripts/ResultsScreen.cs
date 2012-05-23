@@ -80,7 +80,7 @@ public class ResultsScreen : MonoBehaviour {
 	void OnGUI() {
 		GUILayout.BeginArea(new Rect(50, 50, Screen.width - 100, Screen.height - 100));
 		GUILayout.BeginVertical("box");
-		
+
 		GUILayout.Label("Results", resultsStyle);
 		GUILayout.Space(50);
 		
@@ -97,18 +97,7 @@ public class ResultsScreen : MonoBehaviour {
 		
 		if(NetworkHelper.IsLowestID(smartFox)) {
 			if(!_matchOver && GUILayout.Button("Next Round")) {
-                var toggle = new SFSRoomVariable("countdownToggle", null);
-                var otherVars = new List<RoomVariable>();
-                otherVars.Add(new SFSRoomVariable("currentRound", smartFox.LastJoinedRoom.GetVariable("currentRound").GetIntValue() + 1));
-                otherVars.Add(new SFSRoomVariable("redTotalScore", _redTotal));
-                otherVars.Add(new SFSRoomVariable("redStored", 0));
-                otherVars.Add(new SFSRoomVariable("blueTotalScore", _blueTotal));
-                otherVars.Add(new SFSRoomVariable("blueStored", 0));
-                otherVars.Add(new SFSRoomVariable("redRobot", getRandomPlayer(false)));
-                otherVars.Add(new SFSRoomVariable("blueRobot", getRandomPlayer(true)));
-                //This needs to be done in two requests
-                smartFox.Send(new SetRoomVariablesRequest(new [] {toggle}));
-                smartFox.Send(new SetRoomVariablesRequest(otherVars));
+                sendNewRoundInfo();
 			}
 		}
 
@@ -120,6 +109,21 @@ public class ResultsScreen : MonoBehaviour {
         GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
+
+    private void sendNewRoundInfo() {
+        var toggle = new SFSRoomVariable("countdownToggle", null);
+        var otherVars = new List<RoomVariable>();
+        otherVars.Add(new SFSRoomVariable("currentRound", smartFox.LastJoinedRoom.GetVariable("currentRound").GetIntValue() + 1));
+        otherVars.Add(new SFSRoomVariable("redTotalScore", _redTotal));
+        otherVars.Add(new SFSRoomVariable("redStored", 0));
+        otherVars.Add(new SFSRoomVariable("blueTotalScore", _blueTotal));
+        otherVars.Add(new SFSRoomVariable("blueStored", 0));
+        otherVars.Add(new SFSRoomVariable("redRobot", getRandomPlayer(false)));
+        otherVars.Add(new SFSRoomVariable("blueRobot", getRandomPlayer(true)));
+        //This needs to be done in two requests
+        smartFox.Send(new SetRoomVariablesRequest(new [] {toggle}));
+        smartFox.Send(new SetRoomVariablesRequest(otherVars));
+    }
 	
 	private string getRandomPlayer(bool blue) {
 		ISFSArray players;
