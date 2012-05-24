@@ -123,8 +123,8 @@ public class ResultsScreen : MonoBehaviour {
     }
 	
 	void OnGUI() {
-		GUILayout.BeginArea(new Rect(400, 50, Screen.width - 600, Screen.height - 100));
-		GUILayout.BeginVertical("box");
+		GUILayout.BeginArea(new Rect(Screen.width / 4, 100, Screen.width / 2, Screen.height - 300));
+		GUILayout.BeginVertical("box", GUILayout.Width(Screen.width / 2));
 
 		GUILayout.Label("Results", titleStyle);
 		GUILayout.Space(20);

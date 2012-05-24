@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour {
 	
 	private GUIStyle scoreboardStyle;
 	
+	private Texture2D flags;
+	
 	// Use this for initialization
 	void Start ()
 	{
@@ -140,6 +142,11 @@ public class GameManager : MonoBehaviour {
 			roundStarted = true;
 			roundTime = Time.time;
 		}
+		
+		if(isBlueTeam)
+			flags = Resources.Load("blue-flag") as Texture2D;
+		else
+			flags = Resources.Load("red-flag") as Texture2D;
 	}
 	
 	private void ResetEventListeners()
@@ -223,22 +230,13 @@ public class GameManager : MonoBehaviour {
 		
 		if(countDownStarted || roundStarted) 
 		{
-            GUI.BeginGroup(new Rect(0, 200, 175, 100));
+            GUI.Label(new Rect(5, 0, 200, 112), flags);
+            GUI.BeginGroup(new Rect(12, 50, 175, 100));
             GUI.Box(new Rect(0, 0, 175, 100), "Scoreboard", "ScoreboardBoxStyle");
             GUI.Label(new Rect(15, 25, 150, 50), "Blue: " + smartFox.LastJoinedRoom.GetVariable("blueTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("blueStored").GetIntValue() + "]", "blueBigFont");
             GUI.Label(new Rect(15, 50, 150, 50), "Red: " + smartFox.LastJoinedRoom.GetVariable("redTotalScore").GetIntValue() + " [+" + smartFox.LastJoinedRoom.GetVariable("redStored").GetIntValue() + "]", "redBigFont");
             GUI.EndGroup();
         }
-		
-		if (isBlueTeam)
-		{
-			GUI.Label(new Rect(10, 10, 300, 50), "Blue Team", "blueBigFont");
-		}
-		else
-		{
-			GUI.Label(new Rect(10, 10, 300, 50), "Red Team", "redBigFont");	
-		}
-		
 	}
 	
 	private void DrawCountDown()
