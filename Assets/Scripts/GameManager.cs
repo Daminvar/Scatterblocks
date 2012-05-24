@@ -329,6 +329,10 @@ public class GameManager : MonoBehaviour {
 			lockBlock(msg);
 		if(msg.GetUtfString("type") == "unlock")
 			unlockBlock(msg);
+		if(msg.GetUtfString("type") == "died")
+			generateExplosion(msg);
+		if(msg.GetUtfString("type") == "respawned")
+			reshowPlayer(msg);
 		if(msg.GetUtfString("type") == "iWon")
 			RoundCleanUp();
 		if(msg.GetUtfString("type") == "roundOver")
@@ -490,6 +494,17 @@ public class GameManager : MonoBehaviour {
 	private void unlockBlock(ISFSObject msg)
 	{
 		_blocks[msg.GetInt("index")].rigidbody.isKinematic = false;
+	}
+	
+	private void generateExplosion(ISFSObject msg) {
+		var robot = msg.GetBool("isBlue") ? blueRobot : redRobot;
+		Instantiate(ExplosionPF, robot.transform.position, Quaternion.identity);
+		robot.GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+	}
+	
+	private void reshowPlayer(ISFSObject msg) {
+		var robot = msg.GetBool("isBlue") ? blueRobot : redRobot;
+		robot.GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
 	}
 
 	private void ShowResultsScreen() {

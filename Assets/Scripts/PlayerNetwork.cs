@@ -81,6 +81,10 @@ public class PlayerNetwork : MonoBehaviour {
 		GetComponentInChildren<SkinnedMeshRenderer>().enabled = true;
 		SendMessage("MakeIdle", SendMessageOptions.DontRequireReceiver);
 		transform.position = startingTransform;
+		var obj = new SFSObject();
+		obj.PutUtfString("type", "respawned");
+		obj.PutBool("isBlue", _isBlueTeam);
+		smartFox.Send(new ObjectMessageRequest(obj));
 	}
 	
 	void Die()
@@ -93,6 +97,11 @@ public class PlayerNetwork : MonoBehaviour {
 		StartCoroutine(deathDelay());
 		var explosion = Instantiate(ExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
 		Destroy(explosion, 1.5f);
+		
+		var obj = new SFSObject();
+		obj.PutUtfString("type", "died");
+		obj.PutBool("isBlue", _isBlueTeam);
+		smartFox.Send(new ObjectMessageRequest(obj));
 		
 		List<GameObject> blockList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Block"));
 		int blockIndex = blockList.IndexOf(lastCollision);
